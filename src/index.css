@@ -136,3 +136,18 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .btn {
+    @apply font-bold py-2 px-4 rounded transition duration-300 ease-in-out;
+  }
+  .btn-default {
+    @apply bg-gray-500 text-white hover:bg-gray-600 hover:text-white;
+  }
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-accent hover:text-white;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-accent hover:text-white;
+  }
+}

@@ -112,6 +112,7 @@ export const processAllDocuments = async (projectId: string) => {
         const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/process/', {
             project_id: projectId
         });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error processing documents:', error);
@@ -133,3 +134,30 @@ export const scrapeWebsite = async (url: string, projectId: string) => {
     }
 }
 
+export const getDocumentPreview = async (documentId: string, projectId: string) => {
+    try {
+        const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/document_preview/', {
+            document_id: documentId,
+            project_id: projectId
+        });
+        console.log(response.data);
+        return response.data.preview_content;
+    } catch (error) {
+        console.error('Error getting document preview:', error);
+        throw error;
+    }
+}
+
+export const deleteDocument = async (documentId: string, projectId: string) => {
+    try {
+        const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/delete_document/', {
+            document_id: documentId,
+            project_id: projectId
+        });
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting document:', error);
+        throw error;
+    }
+}

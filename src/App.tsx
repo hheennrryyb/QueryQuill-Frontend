@@ -10,6 +10,7 @@ import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
 import { ProfileProvider } from './contexts/profile-context';
 import Nav from './components/nav'; // Assuming you have a separate Nav component
+import toast, { Toaster } from 'react-hot-toast';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <AuthProvider>
         <Router>
           <Nav />
+          <div id="window">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
@@ -27,7 +29,9 @@ function App() {
               <Route path="/file-explorer/:projectId" element={<FileExplorer />} />
               <Route path="/user" element={<User />} />
             </Route>
-          </Routes>
+            </Routes>
+            <Toaster />
+          </div>
         </Router>
       </AuthProvider>
     </ProfileProvider>

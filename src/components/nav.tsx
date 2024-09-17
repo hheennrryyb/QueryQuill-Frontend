@@ -6,14 +6,19 @@ const Nav: React.FC = () => {
   const { isAuthenticated, logout, isLoading } = useAuth();
 
   return (
-    <nav className="bg-gray-800 p-4">
-      <ul className="flex space-x-4">
+    <nav className="" id="nav">
+      <ul className="bg-secondary flex items-center" id="nav-container">
+        <li className="mr-auto">
+          <Link to="/">
+            <img src="/QueryQuillLogoHorizontal.png" alt="QueryQuill Logo" className="h-12" />
+          </Link>
+        </li>
         <li>
           <Link to="/projects" className="text-white hover:text-gray-300">Projects</Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/file-explorer" className="text-white hover:text-gray-300">File Explorer</Link>
-        </li>
+        </li> */}
         <li>
           <Link to="/user" className="text-white hover:text-gray-300">User</Link>
         </li>

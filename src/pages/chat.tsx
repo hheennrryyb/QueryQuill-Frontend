@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send } from "lucide-react"
+import { Send, Bot } from "lucide-react"
 import ChatbotAPI from '../lib/chatbot.ts'; // Renamed import
 import { useParams } from 'react-router-dom';
+import { getProjectDetails } from '../lib/actions';
 
 type Message = {
   id: number
@@ -46,6 +47,13 @@ export default function Chat() { // Renamed from Chatbot to Chat
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [chatbot] = useState(() => new ChatbotAPI());
+  const [projectDetails, setProjectDetails] = useState<any>(null);
+  console.log(projectDetails);
+  useEffect(() => {
+    if (projectId) {
+      getProjectDetails(projectId).then(setProjectDetails);
+    }
+  }, [projectId]);
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -70,21 +78,23 @@ export default function Chat() { // Renamed from Chatbot to Chat
     <div className="bg-background rounded-lg shadow-lg w-full max-w-md mx-auto h-[600px] flex flex-col">
       <div className="p-4 border-b border-border">
         <h2 className="text-2xl font-bold text-primary">Chatbot</h2>
+        <p>Project Name: {projectDetails?.name}</p>
+        <p>Last Updated: { new Date(projectDetails?.updated_at).toLocaleString()}</p>
       </div>
       <div className="p-4 flex-grow overflow-hidden">
         <ScrollArea>
           {messages.map((message) => (
             <div key={message.id} className={`flex items-start mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.sender === 'bot' && (
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground mr-2">
-                  Bot
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white mr-2 ">
+                  <Bot size={24} />
                 </div>
               )}
-              <div className={`rounded-lg p-3 max-w-[80%] ${message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+              <div className={`rounded-lg p-3 max-w-[80%] text-white ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary'}`}>
                 {message.text}
               </div>
               {message.sender === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground ml-2">
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white ml-2">
                   You
                 </div>
               )}

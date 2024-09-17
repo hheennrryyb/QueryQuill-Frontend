@@ -3,6 +3,8 @@ import { getProjects, createNewProject } from '../lib/actions';
 import { useProfile } from '../contexts/profile-context';
 import SimpleDialog from '../components/dialog';
 import { Link } from 'react-router-dom';
+import { LibraryBig } from 'lucide-react';
+
 interface Project {
     // Define project properties here, e.g.:
     id: string;
@@ -14,14 +16,14 @@ interface Project {
 
 const ProjectComponent = ({ project }: { project: Project }) => {
     return (
-        <div className='bg-white p-4 rounded-lg shadow-md'>
-            <h1 className='text-2xl font-bold'>{project.name}</h1>
+        <div className='p-4 rounded-lg shadow-md outline outline-2 outline-secondary'>
+            <div className='flex flex-row gap-2'><LibraryBig size={32}/> <h1 className='text-2xl font-bold'>{project.name}</h1></div>
             <p className='text-gray-700'>{project.description}</p>
-            <p>{new Date(project.created_at).toLocaleDateString()}</p>
-            <p>{new Date(project.updated_at).toLocaleDateString()}</p>
-            <div className='flex gap-2 mt-2 justify-center'>
-                <Link to={`/chat/${project.id}`} className='bg-blue-500 text-white rounded-md p-2'>Chat</Link>
-                <Link to={`/file-explorer/${project.id}`} className='bg-blue-500 text-white rounded-md p-2'>File Explorer</Link>
+            <p>Created at: {new Date(project.created_at).toLocaleString()}</p>
+            <p>Updated at: {new Date(project.updated_at).toLocaleString()}</p>
+            <div className='flex gap-2 mt-2 justify-start'>
+                <Link to={`/chat/${project.id}`} className='btn btn-primary'>Chat</Link>
+                <Link to={`/file-explorer/${project.id}`} className='btn btn-secondary'>File Explorer</Link>
             </div>
         </div>
     );
@@ -61,28 +63,35 @@ const Projects: React.FC = () => {
 
     return (
         <div>
-            <h1>Projects</h1>
-            <SimpleDialog triggerText="Create New Project" title="Create New Project">
-                <form onSubmit={handleCreateNewProjectSubmit} ref={formRef} className='flex flex-col gap-2'>
-                    <input 
-                        type="text" 
-                        placeholder="Project Name" 
-                        ref={projectNameRef}
-                        required
-                        className='border border-gray-300 rounded-md p-2 text-white'
-                    />
-                    <button type="submit" className='bg-blue-500 text-white rounded-md p-2'>Create</button>
-                </form>
-            </SimpleDialog>
+            <header className="bg-primary text-primary-foreground p-4 flex justify-between">
+                <div className="flex flex-col justify-start">
+                    <h1 className="text-2xl font-bold">Projects</h1>
+                </div>
+                <SimpleDialog triggerText="Create New Project" title="Create New Project">
+                    <form onSubmit={handleCreateNewProjectSubmit} ref={formRef} className='flex flex-col gap-2'>
+                        <input
+                            type="text"
+                            placeholder="Project Name"
+                            ref={projectNameRef}
+                            required
+                            className='border border-gray-300 rounded-md p-2 text-white'
+                        />
+                        <button type="submit" className='btn btn-primary text-white rounded-md p-2'>Create</button>
+                    </form>
+                </SimpleDialog>
+            </header>
             {error ? (
                 <p>Error: {error}</p>
             ) : projects.length > 0 ? (
                 projects.map((project) => (
-                    <ProjectComponent key={project.id} project={project} />
+                    <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                        <ProjectComponent key={project.id} project={project} />
+                    </div>
                 ))
             ) : (
                 <p>No projects found.</p>
             )}
+            
         </div>
     );
 };
