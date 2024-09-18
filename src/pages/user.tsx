@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useProfile } from '../contexts/profile-context';
 import { useAuth } from '../contexts/auth-context';
-
+import LoadingSpinner from '../components/loading-spinner';
 const User: React.FC = () => {
   const { profile } = useProfile();
   const { logout } = useAuth();
@@ -15,7 +15,7 @@ const User: React.FC = () => {
           <p><strong>Email:</strong> {profile.email}</p>
         </div>
       ) : (
-        <p>Loading profile...</p>
+        <p><LoadingSpinner /></p>
       )}
       <button
         onClick={logout}

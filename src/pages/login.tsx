@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/auth-context';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast'
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -13,6 +15,7 @@ const Login: React.FC = () => {
     login(username, password).then(() => {
       navigate('/projects');
     }).catch((error) => {
+      toast.error('Error logging in: ' + error.response.data.error);
       console.error('Login failed:', error);
     });
   };
@@ -50,6 +53,9 @@ const Login: React.FC = () => {
             </div>
           </div>
         </form>
+      <div className='mt-4'>
+        <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+      </div>
       </div>
     </div>
   );

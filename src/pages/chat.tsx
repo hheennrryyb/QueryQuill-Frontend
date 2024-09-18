@@ -1,8 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, Bot } from "lucide-react"
+import { Send, Bot, Copy, ArrowLeft } from "lucide-react"
+import ReactMarkdown from 'react-markdown'
 import ChatbotAPI from '../lib/chatbot.ts'; // Renamed import
 import { useParams } from 'react-router-dom';
 import { getProjectDetails } from '../lib/actions';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
+// import { CodeProps, ReactMarkdownProps } from 'react-markdown/lib/ast-to-react';
+
+import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
+import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+
 
 type Message = {
   id: number
@@ -42,12 +54,16 @@ const TypingIndicator = () => (
 export default function Chat() { // Renamed from Chatbot to Chat
   const { projectId } = useParams<{ projectId: string }>();
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Hello! How can I assist you today?", sender: 'bot' }
+    { id: 1, text: `Hi there! I'm **Query Quill**, your AI assistant. 📚✨ \n\n
+With access to all the documents in your project, I'm here to help you find the information you need quickly. Whether you have a question, need a summary, or want to brainstorm ideas, I'm ready to assist you.
+\n\n Feel free to ask me anything related to your project, and I'll do my best to provide accurate and helpful information.
+\n\n So, how can I help you today? Let's get started! 😊`, sender: 'bot' }
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [chatbot] = useState(() => new ChatbotAPI());
   const [projectDetails, setProjectDetails] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (projectId) {
@@ -76,6 +92,9 @@ export default function Chat() { // Renamed from Chatbot to Chat
 
   return (
     <div className="bg-background rounded-lg shadow-lg w-full max-w-2xl mx-auto h-full flex flex-col ">
+      <div onClick={() => {
+        navigate(`/file-explorer/${projectId}`);
+      }} className="text-muted-foreground p-2 m-0 w-fit self-start flex items-center gap-2 cursor-pointer"> <ArrowLeft size={16} /> Back to File Explorer </div>
       <div className="p-4 border-b border-border">
         <h2 className="text-2xl font-bold text-primary">Chatbot</h2>
         <p>Project Name: {projectDetails?.name}</p>
@@ -91,7 +110,47 @@ export default function Chat() { // Renamed from Chatbot to Chat
                 </div>
               )}
               <div className={`rounded-lg p-3 max-w-[80%] text-white ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary'}`}>
-                {message.text}
+                {message.sender === 'bot' ? (
+                  <div className="flex flex-col w-full">
+                  <ReactMarkdown 
+                  className="prose dark:prose-invert "
+                  remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+                  rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                  components={{
+                    ul: ({node, ...props}) => <ul className="list-disc pl-4" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal pl-4" {...props} />,
+                    li: ({node, ...props}) => <li className="my-1" {...props} />,
+                    strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+                    p: ({node, ...props}) => <p className="mb-4" {...props} />,
+                    code({node, inline, className, children, ...props}) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <pre className={`language-${match[1]} p-2 rounded-md text-wrap`}>
+                          <code className={`language-${match[1]}`} {...props}>
+                            {children}
+                          </code>
+                        </pre>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+                  }}
+                  >{message.text}</ReactMarkdown>
+                  {message.id !== 1 && (
+                  <button className="text-muted-foreground p-2 m-0 w-fit self-end" onClick={() => {
+                      navigator.clipboard.writeText(message.text);
+                    toast.success('Copied to clipboard');
+                  }}>
+                    <Copy className="h-4 w-4" />
+                  </button>
+                  )}
+                  </div>
+                ) : (
+                  message.text
+                )}
+                
               </div>
               {message.sender === 'user' && (
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white ml-2">

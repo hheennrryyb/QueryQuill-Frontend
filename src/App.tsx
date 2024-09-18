@@ -5,6 +5,7 @@ import Chat from './pages/chat';
 import FileExplorer from './pages/file-explorer';
 import User from './pages/user';
 import Login from './pages/login';
+import Signup from './pages/signup';
 import Logout from './pages/logout';
 import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
@@ -22,6 +23,7 @@ function App() {
           <div id="window">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/logout" element={<Logout />} />
             <Route element={<PrivateRoute />}>
               <Route path="/projects" element={<Projects />} />

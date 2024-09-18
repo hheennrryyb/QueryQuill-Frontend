@@ -8,7 +8,7 @@ import * as HoverCard from '@radix-ui/react-hover-card'
 import * as Separator from '@radix-ui/react-separator'
 import toast from 'react-hot-toast';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-
+import LoadingSpinner from '../components/loading-spinner';
 interface ProjectDetails {
   name: string;
   project_id: string;
@@ -274,7 +274,7 @@ const FileExplorer: React.FC = () => {
                         <p>{previewContent}</p>
                         <p className='text-xs text-muted-foreground mt-4'>First 50000 characters or max 10 pages</p>
                       </div>
-                      :<p>Loading Preview...</p>}
+                      :<p><LoadingSpinner /></p>}
                     </div>
                   </div>
                 ) : (

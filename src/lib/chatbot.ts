@@ -7,7 +7,7 @@ interface Message {
 }
 
 function arrayToString(array: any[]) {
-    return array.map((item, index) => `result${index + 1}{${item}}`).join(', ');
+    return array.map((item, index) => `\n\nContext ${index + 1}: {${item.content}}`).join(', ');
 }
 
 class Chatbot {
@@ -36,7 +36,7 @@ class Chatbot {
 
     async sendMessage(userMessage: string, projectId: string): Promise<string> {
         const context = await this.getRelevantContext(userMessage, projectId);
-        
+        console.log(context);
         this.conversationHistory.push({
             role: 'system',
             content: `You are an AI assistant with access to a knowledge base. Your primary role is to provide accurate and helpful responses based on the context provided for each query. Please follow these guidelines:
@@ -45,7 +45,9 @@ class Chatbot {
                 3. If you're unsure or the information seems incomplete, don't hesitate to say so.
                 4. Provide concise answers unless asked for more detail.
                 5. If asked about source information, refer to the context but don't invent specific sources.
-                6. Maintain a helpful and professional tone throughout the conversation.`
+                6. Maintain a helpful and professional tone throughout the conversation.
+                7. Context is given the the order of relevance, so the most relevant context is given first.
+                Context: ${context}`
         });
 
         this.conversationHistory.push({

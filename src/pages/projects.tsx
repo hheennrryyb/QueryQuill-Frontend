@@ -83,13 +83,15 @@ const Projects: React.FC = () => {
             {error ? (
                 <p>Error: {error}</p>
             ) : projects.length > 0 ? (
-                projects.map((project) => (
-                    <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    {projects.map((project) => (
                         <ProjectComponent key={project.id} project={project} />
-                    </div>
-                ))
+                    ))}
+                </div>
             ) : (
-                <p>No projects found.</p>
+                <div>
+                    <p className='text-2xl font-bold flex flex-row gap-2 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'><LibraryBig size={32}/> No projects found</p>
+                </div>
             )}
             
         </div>

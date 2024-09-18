@@ -22,6 +22,21 @@ export const loginUser = async (username: string, password: string) => {
   }
 };
 
+export const createUser = async (username: string, password: string, email: string) => {
+  try {
+    const response = await axiosInstance.post('/create_user/', {
+      username,
+      password,
+      email
+    });
+    console.log('User created:', response);
+    return response;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
 export const getProjects = async () => {
     try {
         const response = await axiosInstance.get(import.meta.env.VITE_BACKEND_URL+'/projects/');
