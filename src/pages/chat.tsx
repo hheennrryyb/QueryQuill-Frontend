@@ -48,7 +48,7 @@ export default function Chat() { // Renamed from Chatbot to Chat
   const [isTyping, setIsTyping] = useState(false)
   const [chatbot] = useState(() => new ChatbotAPI());
   const [projectDetails, setProjectDetails] = useState<any>(null);
-  console.log(projectDetails);
+
   useEffect(() => {
     if (projectId) {
       getProjectDetails(projectId).then(setProjectDetails);
@@ -75,7 +75,7 @@ export default function Chat() { // Renamed from Chatbot to Chat
   }
 
   return (
-    <div className="bg-background rounded-lg shadow-lg w-full max-w-md mx-auto h-[600px] flex flex-col">
+    <div className="bg-background rounded-lg shadow-lg w-full max-w-2xl mx-auto h-full flex flex-col ">
       <div className="p-4 border-b border-border">
         <h2 className="text-2xl font-bold text-primary">Chatbot</h2>
         <p>Project Name: {projectDetails?.name}</p>

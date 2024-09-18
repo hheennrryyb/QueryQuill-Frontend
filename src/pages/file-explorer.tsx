@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument } from '../lib/actions';
+import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument } from '../lib/actions';
 import SimpleDialog from '../components/dialog';
 import { File, FileClock , FileCheck ,CloudCog , BotMessageSquare} from 'lucide-react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
@@ -105,7 +105,28 @@ const FileExplorer: React.FC = () => {
       setUploadProgress(0);
     }
   };
-  
+
+  const handleUploadText = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const documentName = formData.get('documentName') as string;
+    const documentContent = formData.get('documentContent') as string;
+    if (projectId) {
+      toast.promise(uploadTextDocument(projectId, documentName, documentContent), {
+        loading: 'Uploading text document...',
+        success: (response) => {
+          toast.success(response.message);
+          getProjectDetails(projectId).then(setProjectDetails);
+          return 'Text document uploaded';
+        },
+        error: (error) => {
+          toast.error(error.message);
+          return 'Error uploading text document';
+        }
+      });
+    }
+  };
+
   const handlePreview = async () => {
     if (selectedFile) {
       const preview = await getDocumentPreview(selectedFile.id, projectId as string);
@@ -155,13 +176,15 @@ const FileExplorer: React.FC = () => {
           <BotMessageSquare size={32} /> Chat with Documents
         </Link>
         <SimpleDialog triggerText="Upload Files" title="Upload Files">
-          <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-10'>
+          <h3 className='text-black mb-2'>Website URL</h3>
+          <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-8'>
             <input type="text" placeholder="URL" name="url" className='border border-gray-300 rounded-md p-2 text-white' />
             <button type="submit" className="btn btn-primary text-white mt-2">
               Scrape URL
             </button>
           </form>
-          <form onSubmit={handleUpload}>
+          <div className='text-black mb-2'>Local Files (PDF, HTML, TXT, etc.)</div>
+          <form onSubmit={handleUpload} className='flex flex-col gap-2 mb-8'>
             <input type="file" multiple name="documents" disabled={uploading} className="btn btn-primary" />
             <button type="submit" disabled={uploading} className="btn btn-primary text-white mt-2">
               {uploading ? 'Uploading...' : 'Upload'}
@@ -172,6 +195,14 @@ const FileExplorer: React.FC = () => {
                 <span>{Math.round(uploadProgress)}%</span>
               </div>
             )}
+          </form>
+          <div className='text-black mb-2'>Paste Text</div>
+          <form onSubmit={handleUploadText} className='flex flex-col gap-2 mb-8'>
+            <input type="text" placeholder="Document Name" name="documentName" className='border border-gray-300 rounded-md p-2 text-white' />
+            <textarea placeholder="Document Content" name="documentContent" className='border border-gray-300 rounded-md p-2 text-white h-40' />
+            <button type="submit" className="btn btn-primary text-white mt-2">
+              Upload Text
+            </button>
           </form>
         </SimpleDialog>
       </div>

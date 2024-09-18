@@ -25,6 +25,7 @@
   margin: 0 auto;
   margin-bottom: 40px;
   background-color: #fff;
+  overflow: hidden;
 }
 
 #nav {

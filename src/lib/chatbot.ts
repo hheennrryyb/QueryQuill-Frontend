@@ -39,7 +39,13 @@ class Chatbot {
         
         this.conversationHistory.push({
             role: 'system',
-            content: `Use the following context to inform your response: ${context}`
+            content: `You are an AI assistant with access to a knowledge base. Your primary role is to provide accurate and helpful responses based on the context provided for each query. Please follow these guidelines:
+                1. Always use the provided context to inform your answers.
+                2. If the context doesn't contain relevant information, rely on your general knowledge but make it clear that you're doing so.
+                3. If you're unsure or the information seems incomplete, don't hesitate to say so.
+                4. Provide concise answers unless asked for more detail.
+                5. If asked about source information, refer to the context but don't invent specific sources.
+                6. Maintain a helpful and professional tone throughout the conversation.`
         });
 
         this.conversationHistory.push({
@@ -53,7 +59,7 @@ class Chatbot {
                 {
                     model: this.model,
                     messages: this.conversationHistory,
-                    max_tokens: 150
+                    max_tokens: 250
                 },
                 {
                     headers: {
@@ -83,7 +89,13 @@ class Chatbot {
     clearConversationHistory(): void {
         this.conversationHistory = [{
             role: 'system',
-            content: 'You are a helpful assistant.'
+            content: `You are an AI assistant with access to a knowledge base. Your primary role is to provide accurate and helpful responses based on the context provided for each query. Please follow these guidelines:
+                1. Always use the provided context to inform your answers.
+                2. If the context doesn't contain relevant information, rely on your general knowledge but make it clear that you're doing so.
+                3. If you're unsure or the information seems incomplete, don't hesitate to say so.
+                4. Provide concise answers unless asked for more detail.
+                5. If asked about source information, refer to the context but don't invent specific sources.
+                6. Maintain a helpful and professional tone throughout the conversation.`
         }];
     }
 }

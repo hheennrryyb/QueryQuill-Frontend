@@ -38,6 +38,7 @@ export const queryVectorProject = async (query: string, projectId: string) => {
             query: query,
             project_id: projectId
         });
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error querying project:', error);
@@ -140,7 +141,7 @@ export const getDocumentPreview = async (documentId: string, projectId: string) 
             document_id: documentId,
             project_id: projectId
         });
-        console.log(response.data);
+        console.log(response)
         return response.data.preview_content;
     } catch (error) {
         console.error('Error getting document preview:', error);
@@ -154,10 +155,24 @@ export const deleteDocument = async (documentId: string, projectId: string) => {
             document_id: documentId,
             project_id: projectId
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error deleting document:', error);
+        throw error;
+    }
+}
+
+export const uploadTextDocument = async (projectId: string, documentName: string, documentContent: string) => {
+    try {
+        const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/upload_text_document/', {
+            project_id: projectId,
+            title: documentName,
+            text_content: documentContent
+        });
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error uploading text document:', error);
         throw error;
     }
 }
