@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument } from '../lib/actions';
 import SimpleDialog from '../components/dialog';
-import { File, FileClock , FileCheck ,CloudCog , BotMessageSquare} from 'lucide-react'
+import { FileIcon, FileClock , FileCheck ,CloudCog , BotMessageSquare} from 'lucide-react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import * as HoverCard from '@radix-ui/react-hover-card'
 import * as Separator from '@radix-ui/react-separator'
@@ -23,6 +23,8 @@ interface File {
   name: string;
   type: string;
   processed: boolean;
+  file_size: number; 
+  uploaded_at: string;
 }
 
 const FileExplorer: React.FC = () => {
@@ -31,7 +33,7 @@ const FileExplorer: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const [selectedFile, setSelectedFile] = useState(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewContent, setPreviewContent] = useState(null)
 
   console.log(selectedFile)
@@ -78,10 +80,13 @@ const FileExplorer: React.FC = () => {
     setUploading(true);
     setUploadProgress(0);
     const formData = new FormData(e.target as HTMLFormElement);
-    const files = formData.getAll('documents');
+    const fileList = formData.getAll('documents');
+    
+    // Filter out non-File entries and cast to File[]
+    const domFiles = fileList.filter((item): item is globalThis.File => item instanceof globalThis.File);
     
     try {
-      await uploadDocumentsToProject(projectId as string, files, (progress) => {
+      await uploadDocumentsToProject(projectId as string, domFiles, (progress) => {
         setUploadProgress(progress);
       }).then((response) => {
         toast.success(response.message);
@@ -279,7 +284,7 @@ const FileExplorer: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                    <File size={48} />
+                    <FileIcon size={48} />
                     <p className="mt-2">Select a file to preview</p>
                   </div>
                 )}

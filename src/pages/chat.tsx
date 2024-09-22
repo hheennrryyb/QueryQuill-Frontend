@@ -122,7 +122,7 @@ With access to all the documents in your project, I'm here to help you find the 
                     li: ({node, ...props}) => <li className="my-1" {...props} />,
                     strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
                     p: ({node, ...props}) => <p className="mb-4" {...props} />,
-                    code({node, inline, className, children, ...props}) {
+                    code({ inline, className, children, ...props }: React.ComponentProps<'code'> & { inline?: boolean }) {
                       const match = /language-(\w+)/.exec(className || '');
                       return !inline && match ? (
                         <pre className={`language-${match[1]} p-2 rounded-md text-wrap`}>

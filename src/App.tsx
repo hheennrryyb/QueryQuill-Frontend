@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Projects from './pages/projects';
 import Chat from './pages/chat';
@@ -11,7 +10,7 @@ import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
 import { ProfileProvider } from './contexts/profile-context';
 import Nav from './components/nav'; // Assuming you have a separate Nav component
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 function App() {

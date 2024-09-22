@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useProfile } from '../contexts/profile-context';
 import { useAuth } from '../contexts/auth-context';
 import LoadingSpinner from '../components/loading-spinner';

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProjects, createNewProject } from '../lib/actions';
-import { useProfile } from '../contexts/profile-context';
 import SimpleDialog from '../components/dialog';
 import { Link } from 'react-router-dom';
 import { LibraryBig } from 'lucide-react';
@@ -30,7 +29,6 @@ const ProjectComponent = ({ project }: { project: Project }) => {
 };
 
 const Projects: React.FC = () => {
-    const { profile } = useProfile();
     const [projects, setProjects] = useState<Project[]>([]);
     const [error, setError] = useState<string | null>(null);
 

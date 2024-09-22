@@ -106,12 +106,13 @@ export const uploadDocumentsToProject = async (projectId: string, documents: Fil
           'Content-Type': 'multipart/form-data',
         },
         onUploadProgress: (progressEvent) => {
-          const totalLength = progressEvent.lengthComputable ? progressEvent.total : parseInt(progressEvent.target.getResponseHeader('content-length'), 10);
-          const progress = Math.round((progressEvent.loaded * 100) / totalLength );
-          onProgress(progress);
-        },
-      }
-    );
+            const totalLength = progressEvent.lengthComputable ? progressEvent.total : parseInt(progressEvent.event.target.getResponseHeader('content-length'), 10);
+            if (totalLength){
+                const progress = Math.round((progressEvent.loaded * 100) / totalLength );
+                onProgress(progress);
+            }
+        }
+    });
 
     return response.data;
   } catch (error) {
