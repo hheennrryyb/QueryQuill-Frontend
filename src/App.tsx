@@ -6,6 +6,7 @@ import User from './pages/user';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import Logout from './pages/logout';
+import Home from './pages/home'; // Import the new Home component
 import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
 import { ProfileProvider } from './contexts/profile-context';
@@ -21,6 +22,7 @@ function App() {
           <Nav />
           <div id="window">
           <Routes>
+            <Route path="/" element={<Home />} /> {/* Add the Home route */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/logout" element={<Logout />} />

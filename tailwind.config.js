@@ -56,7 +56,20 @@ export default {
       },
       animation: {
         'spin-fast': 'spin 1s linear infinite',
-      }
+        'spin-slow': 'spin 30s linear infinite',
+        'appear': 'fadeIn 0.8s ease-out',
+        'fade-in': 'reveal 1s ease-in-out forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        reveal: {
+          '0%': { transform: 'translateY(40px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        }
+      },
     }
   },
   plugins: [require("tailwindcss-animate")],

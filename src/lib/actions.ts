@@ -192,3 +192,18 @@ export const uploadTextDocument = async (projectId: string, documentName: string
         throw error;
     }
 }
+
+export const getTaskStatus = async (taskId: string) => {
+  try {
+    const response = await axiosInstance.get(import.meta.env.VITE_BACKEND_URL+'/task_status/', {
+      params: {
+        task_id: taskId
+      }
+    });
+    console.log('Task status:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting task status:', error);
+    throw error;
+  }
+};

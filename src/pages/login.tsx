@@ -12,11 +12,19 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(username, password).then(() => {
-      navigate('/projects');
+    toast.promise(
+      login(username, password),
+      {
+        loading: 'Logging in...',
+        success: (response) => {
+          navigate('/projects');
+          return 'Login successful';
+        },
+        error: (error) => error.message,
+      }
+    ).then(() => {
     }).catch((error) => {
       toast.error('Error logging in: ' + error.response.data.error);
-      console.error('Login failed:', error);
     });
   };
 

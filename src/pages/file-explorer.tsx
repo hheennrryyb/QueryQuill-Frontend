@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument } from '../lib/actions';
+import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument, getTaskStatus } from '../lib/actions';
 import SimpleDialog from '../components/dialog';
-import { FileIcon, FileClock , FileCheck ,CloudCog , BotMessageSquare} from 'lucide-react'
+import { FileIcon, FileClock , FileCheck ,CloudCog , BotMessageSquare, Loader} from 'lucide-react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import * as HoverCard from '@radix-ui/react-hover-card'
 import * as Separator from '@radix-ui/react-separator'
@@ -36,24 +36,52 @@ const FileExplorer: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewContent, setPreviewContent] = useState(null)
 
+  const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
+  const [processingStatus, setProcessingStatus] = useState<string | null>(null);
+
   console.log(selectedFile)
 
   const handleProcessAll = async () => {
     if (projectId) {
-      toast.promise(processAllDocuments(projectId), {
-        loading: 'Processing all documents...',
-        success: (response) => {
-          toast.success(response.message);
-          getProjectDetails(projectId).then(setProjectDetails);
-          return 'All documents processed';
-        },
-        error: (error) => {
-          toast.error(error.message);
-          return 'Error processing documents';
-        }
-      });
+      try {
+        const response = await processAllDocuments(projectId);
+        setProcessingTaskId(response.task_id);
+        toast.success('Started processing all documents');
+      } catch (error) {
+        toast.error('Error starting document processing');
+      }
     }
   };
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (processingTaskId) {
+      intervalId = setInterval(async () => {
+        try {
+          const statusResponse = await getTaskStatus(processingTaskId);
+          setProcessingStatus(statusResponse.status);
+
+          if (statusResponse.status === 'SUCCESS') {
+            clearInterval(intervalId);
+            toast.success('All documents processed successfully');
+            if (projectId) {
+              getProjectDetails(projectId).then(setProjectDetails);
+            }
+          } else if (statusResponse.status === 'FAILURE') {
+            clearInterval(intervalId);
+            toast.error('Error processing documents');
+          }
+        } catch (error) {
+          console.error('Error checking task status:', error);
+        }
+      }, 2000); // Check every 2 seconds
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [processingTaskId, projectId]);
 
   const handleScrapeUrl = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -174,9 +202,17 @@ const FileExplorer: React.FC = () => {
           <p className="text-sm text-left">Updated at: { new Date (projectDetails?.updated_at || '').toLocaleDateString()}</p>
         </div>
       <div className='flex flex-row gap-2'>
-        <div className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer' onClick={handleProcessAll}>
-          <CloudCog size={32} /> Process All Documents
-        </div>
+        <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer' onClick={handleProcessAll} disabled={!!processingTaskId}>
+          <CloudCog size={32} />
+          {processingTaskId ? (
+            <div className='flex flex-row gap-2 align-middle items-center'>
+              {processingStatus !== 'SUCCESS' && processingStatus !== 'FAILURE' && (
+                <Loader size={16} className='animate-spin'/>
+              )}
+              <p>Processing Status: {processingStatus || 'Starting...'}</p>
+            </div>
+          ): <p>Process All Documents</p>}
+        </button>
         <Link to={`/chat/${projectId}`} className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer text-white'>
           <BotMessageSquare size={32} /> Chat with Documents
         </Link>
