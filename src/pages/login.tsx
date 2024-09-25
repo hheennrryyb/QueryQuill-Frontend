@@ -16,7 +16,7 @@ const Login: React.FC = () => {
       login(username, password),
       {
         loading: 'Logging in...',
-        success: (response) => {
+        success: () => {
           navigate('/projects');
           return 'Login successful';
         },
