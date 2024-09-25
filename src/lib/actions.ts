@@ -1,6 +1,18 @@
 import axios from 'axios';
 import axiosInstance, { setAuthToken } from './axios-instance';
 
+
+export const checkServerStatus = async () => {
+  try {
+    const response = await axiosInstance.get('/');
+    console.log(response.data.status);
+    return response.data.status;
+  } catch (error) {
+    console.error('Error checking server status:', error);
+    throw error;
+  }
+};
+
 export const loginUser = async (username: string, password: string) => {
   try {
     const response = await axiosInstance.post('/login/', {
