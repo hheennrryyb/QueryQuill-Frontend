@@ -5,7 +5,7 @@ import axiosInstance, { setAuthToken } from '../lib/axios-instance';
 import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | null;
   isLoading: boolean;
   isServerRunning: boolean;
   login: (username: string, password: string) => Promise<void>;
@@ -15,7 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isServerRunning, setIsServerRunning] = useState<boolean>(false);
   const { setProfile } = useProfile();

@@ -39,7 +39,6 @@ const FileExplorer: React.FC = () => {
   const [processingTaskId, setProcessingTaskId] = useState<string | null>(null);
   const [processingStatus, setProcessingStatus] = useState<string | null>(null);
 
-  console.log(selectedFile)
 
   const handleProcessAll = async () => {
     if (projectId) {
