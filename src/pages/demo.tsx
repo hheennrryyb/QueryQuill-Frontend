@@ -29,7 +29,7 @@ const Demo: React.FC = () => {
 
       try {
         const response = await axiosInstance.post('/demo/');
-        const { username, password, projects } = response.data;
+        const { username, password } = response.data;
 
         // Log in the user with the provided credentials
         await login(username, password);
