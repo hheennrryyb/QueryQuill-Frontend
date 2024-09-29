@@ -6,18 +6,25 @@ import LoadingSpinner from './loading-spinner';
 const PrivateRoute: React.FC = () => {
   const { isAuthenticated, isLoading, isServerRunning } = useAuth();
 
-  if (isLoading || isAuthenticated === null) {
+  // If authentication status is known and user is not authenticated, redirect to login
+  if (!isLoading && !isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If server is not running, show error message
+  if (!isServerRunning) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
+      <div className="flex items-center justify-center h-full text-2xl">
+        Server is not running. Please try again later.
       </div>
     );
   }
 
-  if (!isServerRunning) {
+  // If still loading and not yet authenticated, show loading spinner
+  if (isLoading && !isAuthenticated) {
     return (
-      <div className="flex items-center justify-center h-full text-2xl text-red-600">
-        Server is not running. Please try again later.
+      <div className="flex items-center justify-center h-full">
+        <LoadingSpinner />
       </div>
     );
   }
