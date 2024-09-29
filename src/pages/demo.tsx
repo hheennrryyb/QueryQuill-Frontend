@@ -5,7 +5,7 @@ import axiosInstance from '../lib/axios-instance';
 import toast from 'react-hot-toast';
 import { Loader } from 'lucide-react';
 
-const COOLDOWN_PERIOD = 0 * 60 * 1000; // 10 minutes in milliseconds
+const COOLDOWN_PERIOD = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 const Demo: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +30,7 @@ const Demo: React.FC = () => {
       try {
         const response = await axiosInstance.post('/demo/');
         const { username, password } = response.data;
-
+        console.log(response.data);
         // Log in the user with the provided credentials
         await login(username, password);
 
