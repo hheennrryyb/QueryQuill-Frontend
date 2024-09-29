@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument, getTaskStatus } from '../lib/actions';
+import { getProjectDetails, uploadDocumentsToProject, processAllDocuments, scrapeWebsite, getDocumentPreview, deleteDocument, uploadTextDocument, getTaskStatus, deleteProject } from '../lib/actions';
 import SimpleDialog from '../components/dialog';
-import { FileIcon, FileClock , FileCheck ,CloudCog , BotMessageSquare, Loader} from 'lucide-react'
+import { FileIcon, FileClock , FileCheck ,CloudCog , BotMessageSquare, Loader, Trash} from 'lucide-react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import * as HoverCard from '@radix-ui/react-hover-card'
 import * as Separator from '@radix-ui/react-separator'
 import toast from 'react-hot-toast';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import LoadingSpinner from '../components/loading-spinner';
+import { useNavigate } from 'react-router-dom';
 interface ProjectDetails {
   name: string;
   project_id: string;
@@ -29,6 +30,7 @@ interface File {
 
 const FileExplorer: React.FC = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate();
   const [projectDetails, setProjectDetails] = useState<ProjectDetails | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -48,6 +50,18 @@ const FileExplorer: React.FC = () => {
         toast.success('Started processing all documents');
       } catch (error) {
         toast.error('Error starting document processing');
+      }
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (projectId) {
+      try {
+        await deleteProject(projectId);
+        toast.success('Project deleted successfully');
+        navigate('/projects');
+      } catch (error) {
+        toast.error('Error deleting project');
       }
     }
   };
@@ -73,8 +87,9 @@ const FileExplorer: React.FC = () => {
           }
         } catch (error) {
           console.error('Error checking task status:', error);
+          clearInterval(intervalId);
         }
-      }, 2000); // Check every 2 seconds
+      }, 5000); // Check every 5 seconds
     }
 
     return () => {
@@ -194,28 +209,14 @@ const FileExplorer: React.FC = () => {
     <div className='flex flex-col h-full'>
       <div className="flex flex-col h-full overflow-scroll">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground p-4 flex justify-between">
+      <header className="bg-primary text-primary-foreground p-4 flex justify-between flex-col gap-2 md:flex-row">
         <div className="flex flex-col justify-start">
           <h1 className="text-2xl font-bold">{projectDetails?.name}: File Explorer</h1>
           <p className="text-sm text-left">Created at:{ new Date (projectDetails?.created_at || '').toLocaleDateString()}</p>
           <p className="text-sm text-left">Updated at: { new Date (projectDetails?.updated_at || '').toLocaleDateString()}</p>
         </div>
-      <div className='flex flex-row gap-2'>
-        <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer' onClick={handleProcessAll} disabled={!!processingTaskId}>
-          <CloudCog size={32} />
-          {processingTaskId ? (
-            <div className='flex flex-row gap-2 align-middle items-center'>
-              {processingStatus !== 'SUCCESS' && processingStatus !== 'FAILURE' && (
-                <Loader size={16} className='animate-spin'/>
-              )}
-              <p>Processing Status: {processingStatus || 'Starting...'}</p>
-            </div>
-          ): <p>Process All Documents</p>}
-        </button>
-        <Link to={`/chat/${projectId}`} className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer text-white'>
-          <BotMessageSquare size={32} /> Chat with Documents
-        </Link>
-        <SimpleDialog triggerText="Upload Files" title="Upload Files">
+      <div className='flex flex-col gap-2 md:flex-row'>
+      <SimpleDialog triggerText="1. Upload Files" title="Upload Files" className='bg-primary border border-white'>
           <h3 className='text-black mb-2'>Website URL</h3>
           <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-8'>
             <input type="text" placeholder="URL" name="url" className='border border-gray-300 rounded-md p-2 text-white' />
@@ -245,6 +246,28 @@ const FileExplorer: React.FC = () => {
             </button>
           </form>
         </SimpleDialog>
+        <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer border border-white' onClick={handleProcessAll} disabled={!!processingTaskId}>
+          <CloudCog size={32} />
+          {processingTaskId ? (
+            <div className='flex flex-row gap-2 align-middle items-center'>
+              {processingStatus !== 'SUCCESS' && processingStatus !== 'FAILURE' && (
+                <Loader size={16} className='animate-spin'/>
+              )}
+              <p>Processing Status: {processingStatus || 'Starting...'}</p>
+            </div>
+          ): <p>2. Process All Documents</p>}
+        </button>
+        <Link to={`/chat/${projectId}`} className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer text-white border border-white'>
+          <BotMessageSquare size={32} />3. Chat with Documents
+        </Link>
+        <SimpleDialog triggerText="Delete Project" title="Delete Project">
+        <div className='flex flex-row gap-2 align-middle items-center'>
+          Are you sure you want to delete this project? This action cannot be undone.
+          <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer bg-red-500' onClick={handleDeleteProject}>
+            <Trash size={16} className='text-white' />
+          </button>
+          </div>
+        </SimpleDialog>
       </div>
       </header>
 
@@ -270,7 +293,7 @@ const FileExplorer: React.FC = () => {
                         >
                           {/* <File className="mx-auto mb-2" size={24} /> */}
                           {!file.processed ?<FileClock className="mx-auto mb-2" size={24} /> : <FileCheck className="mx-auto mb-2" size={24} />}
-                          <p className="text-sm text-center truncate">{file.name}</p>
+                          <p className="text-sm text-center truncate">{file.name.split('/').pop()}</p>
                         </div>
                       </HoverCard.Trigger>
                       <HoverCard.Portal>
@@ -295,19 +318,19 @@ const FileExplorer: React.FC = () => {
           </ScrollArea.Root>
         </Panel>
 
-        <PanelResizeHandle className="w-1 bg-border hover:bg-accent cursor-col-resize" />
+        <PanelResizeHandle className="w-2 bg-border hover:bg-accent cursor-col-resize" />
 
         {/* Right panel - Preview */}
-        <Panel minSize={30}>
+        <Panel minSize={20}>
           <ScrollArea.Root className="w-full h-full" type="hover">
             <ScrollArea.Viewport className="w-full h-full">
               <div className="p-4">
                 {selectedFile ? (
                   <div>
-                    <h2 className="text-xl font-semibold mb-4">{selectedFile.name}</h2>
+                    <h2 className="text-xl font-semibold mb-4 break-all">{selectedFile.name}</h2>
                     <button onClick={handleDelete} className="btn btn-secondary text-white bg-red-500 rounded-md p-2 mb-4">Delete Document</button>
                     <div className="bg-muted p-4 rounded">
-                      <p>Preview of {selectedFile.name}</p>
+                      <p className='text-lg font-semibold break-all'>Preview of {selectedFile.name.split('/').pop()}</p>
                       <div className="my-4 border-t border-accent"></div>
                       {previewContent ?
                       <div>

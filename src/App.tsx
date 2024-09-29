@@ -6,6 +6,8 @@ import User from './pages/user';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import Logout from './pages/logout';
+import Disclosure from './pages/disclosure';
+import Demo from './pages/demo';
 import Home from './pages/home'; // Import the new Home component
 import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
@@ -32,6 +34,8 @@ function App() {
               <Route path="/file-explorer/:projectId" element={<FileExplorer />} />
               <Route path="/user" element={<User />} />
             </Route>
+            <Route path="/disclosure" element={<Disclosure />} />
+            <Route path="/demo" element={<Demo />} />
             </Routes>
             <Toaster />
           </div>

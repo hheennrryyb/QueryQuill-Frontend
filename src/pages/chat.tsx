@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, Bot, Copy, ArrowLeft } from "lucide-react"
+import { Send, Bot, Copy, ArrowLeft, UserRound } from "lucide-react"
 import ReactMarkdown from 'react-markdown'
 import ChatbotAPI from '../lib/chatbot.ts'; // Renamed import
 import { useParams } from 'react-router-dom';
@@ -41,7 +41,7 @@ const ScrollArea = ({ children }: { children: React.ReactNode }) => {
 const TypingIndicator = () => (
   <div className="flex items-center space-x-2 mb-4">
     <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground mr-2">
-      Bot
+      <Bot size={24} />
     </div>
     <div className="flex space-x-2">
       <div className="w-3 h-3 rounded-full bg-secondary animate-bounce"></div>
@@ -106,7 +106,7 @@ With access to all the documents in your project, I'm here to help you find the 
             <div key={message.id} className={`flex items-start mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.sender === 'bot' && (
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white mr-2 ">
-                  <Bot size={24} />
+                  <Bot size={24} className="text-white"/>
                 </div>
               )}
               <div className={`rounded-lg p-3 max-w-[80%] text-white ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary'}`}>
@@ -154,7 +154,7 @@ With access to all the documents in your project, I'm here to help you find the 
               </div>
               {message.sender === 'user' && (
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white ml-2">
-                  You
+                  <UserRound />
                 </div>
               )}
             </div>

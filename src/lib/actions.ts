@@ -5,7 +5,6 @@ import axiosInstance, { setAuthToken } from './axios-instance';
 export const checkServerStatus = async () => {
   try {
     const response = await axiosInstance.get('/');
-    console.log(response.data.status);
     return response.data.status;
   } catch (error) {
     console.error('Error checking server status:', error);
@@ -41,7 +40,6 @@ export const createUser = async (username: string, password: string, email: stri
       password,
       email
     });
-    console.log('User created:', response);
     return response;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -65,7 +63,6 @@ export const queryVectorProject = async (query: string, projectId: string) => {
             query: query,
             project_id: projectId
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error querying project:', error);
@@ -90,7 +87,6 @@ export const getProjectDetails = async (projectId: string) => {
     const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL + '/project_detail/', {
       project_id: projectId
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching project details:', error);
@@ -106,10 +102,6 @@ export const uploadDocumentsToProject = async (projectId: string, documents: Fil
     documents.forEach((doc) => {
       formData.append('documents', doc);
     });
-    console.log('FormData entries:');
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
     const response = await axiosInstance.post(
       `${import.meta.env.VITE_BACKEND_URL}/upload/`,
       formData,
@@ -141,7 +133,6 @@ export const processAllDocuments = async (projectId: string) => {
         const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/process/', {
             project_id: projectId
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error processing documents:', error);
@@ -155,7 +146,6 @@ export const scrapeWebsite = async (url: string, projectId: string) => {
             url: url,
             project_id: projectId
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error scraping website:', error);
@@ -169,7 +159,6 @@ export const getDocumentPreview = async (documentId: string, projectId: string) 
             document_id: documentId,
             project_id: projectId
         });
-        console.log(response)
         return response.data.preview_content;
     } catch (error) {
         console.error('Error getting document preview:', error);
@@ -197,7 +186,6 @@ export const uploadTextDocument = async (projectId: string, documentName: string
             title: documentName,
             text_content: documentContent
         });
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error uploading text document:', error);
@@ -216,6 +204,18 @@ export const getTaskStatus = async (taskId: string) => {
     return response.data;
   } catch (error) {
     console.error('Error getting task status:', error);
+    throw error;
+  }
+};
+
+export const deleteProject = async (projectId: string) => {
+  try {
+    const response = await axiosInstance.post(import.meta.env.VITE_BACKEND_URL+'/delete_project/', {
+      project_id: projectId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting project:', error);
     throw error;
   }
 };

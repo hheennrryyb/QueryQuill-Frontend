@@ -61,7 +61,7 @@ const Projects: React.FC = () => {
 
     return (
         <div>
-            <header className="bg-primary text-primary-foreground p-4 flex justify-between">
+            <header className="bg-primary text-primary-foreground px-8 py-4 flex justify-between">
                 <div className="flex flex-col justify-start">
                     <h1 className="text-2xl font-bold">Projects</h1>
                 </div>

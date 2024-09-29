@@ -10,7 +10,8 @@ const Nav: React.FC = () => {
       <ul className="bg-secondary flex items-center" id="nav-container">
         <li className="mr-auto">
           <Link to="/">
-            <img src="/QueryQuillLogoHorizontal.png" alt="QueryQuill Logo" className="h-12" />
+            <img src="/QueryQuillLogoHorizontal.png" alt="QueryQuill Logo" className="h-12 hidden md:block" />
+            <img src="/full_icon.png" alt="QueryQuill Logo" className=" max-h-12 md:hidden aspect-square" />
           </Link>
         </li>
         <li>
@@ -25,11 +26,11 @@ const Nav: React.FC = () => {
         {!isLoading && (
           isAuthenticated ? (
             <li>
-              <button onClick={logout} className="text-white hover:text-gray-300">Logout</button>
+              <button onClick={logout} className="text-white  btn btn-primary">Logout</button>
             </li>
           ) : (
             <li>
-              <Link to="/login" className="text-white hover:text-gray-300">Login</Link>
+              <Link to="/login" className="text-white  btn btn-primary">Login</Link>
             </li>
           )
         )}

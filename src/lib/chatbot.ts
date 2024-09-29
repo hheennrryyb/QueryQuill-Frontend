@@ -31,12 +31,12 @@ class Chatbot {
         const context = await queryVectorProject(query, projectId);
 
         const contextString = arrayToString(context.results);
-        return `Relevant context for: ${contextString}`;
+        return contextString;
     }
 
     async sendMessage(userMessage: string, projectId: string): Promise<string> {
         const context = await this.getRelevantContext(userMessage, projectId);
-        console.log(context);
+        console.log("The following context for the query '" + userMessage + "' was found: \n\n" + context);
         this.conversationHistory.push({
             role: 'system',
             content: `You are an AI assistant with access to a knowledge base. Your primary role is to provide accurate and helpful responses based on the context provided for each query. Please follow these guidelines:
