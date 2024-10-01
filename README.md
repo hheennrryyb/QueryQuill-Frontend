@@ -1,5 +1,7 @@
 # Query Quill
 
+![Query Quill Logo](https://github.com/hheennrryyb/QueryQuill-Frontend/blob/d0b642c6ed27c2db8d5404deae130671b9f3545b/public/QueryQuillLogoHorizontal.png)
+
 Query Quill is an innovative document processing and querying platform that empowers users to build custom-trained RAG (Retrieval-Augmented Generation) models with ease. This project was developed by Henry Bellman as a personal project.
 
 ## Try It Out!
