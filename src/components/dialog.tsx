@@ -19,7 +19,7 @@ const SimpleDialog = ({
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
         <button className={`${className} btn btn-secondary px-4 py-2 text-white rounded-md  focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}>
-          {triggerText}
+          <p className='text-center w-full'>{triggerText}</p>
         </button>
       </DialogPrimitive.Trigger>
       <DialogPrimitive.Portal>

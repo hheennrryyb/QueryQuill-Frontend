@@ -6,8 +6,8 @@ interface Message {
     content: string;
 }
 
-function arrayToString(array: any[]) {
-    return array.map((item, index) => `\n\nContext ${index + 1}: {${item.content}}`).join(', ');
+function arrayToString(array: any[]): string {
+    return array.map((item, index) => `\n\n### Context ${index + 1}\n\n${item.content}`).join('\n');
 }
 
 class Chatbot {
@@ -15,6 +15,7 @@ class Chatbot {
     private baseUrl: string = 'https://api.openai.com/v1/chat/completions';
     private model: string = 'gpt-3.5-turbo';
     private conversationHistory: Message[] = [];
+
 
     constructor() {
         this.apiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
@@ -37,6 +38,7 @@ class Chatbot {
     async sendMessage(userMessage: string, projectId: string): Promise<string> {
         const context = await this.getRelevantContext(userMessage, projectId);
         console.log("The following context for the query '" + userMessage + "' was found: \n\n" + context);
+        
         this.conversationHistory.push({
             role: 'system',
             content: `You are an AI assistant with access to a knowledge base. Your primary role is to provide accurate and helpful responses based on the context provided for each query. Please follow these guidelines:

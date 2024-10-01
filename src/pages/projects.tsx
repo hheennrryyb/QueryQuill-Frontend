@@ -3,7 +3,7 @@ import { getProjects, createNewProject } from '../lib/actions';
 import SimpleDialog from '../components/dialog';
 import { Link } from 'react-router-dom';
 import { LibraryBig } from 'lucide-react';
-
+import toast from 'react-hot-toast';
 interface Project {
     // Define project properties here, e.g.:
     id: string;
@@ -30,7 +30,6 @@ const ProjectComponent = ({ project }: { project: Project }) => {
 
 const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
-    const [error, setError] = useState<string | null>(null);
 
     const projectNameRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
@@ -42,10 +41,14 @@ const Projects: React.FC = () => {
 
         try {
             const newProject = await createNewProject(projectName);
+            if (newProject.status >= 400) {
+                throw new Error(newProject.data?.response?.data?.error || 'Failed to create project');
+            }
             setProjects(prevProjects => [...prevProjects, newProject.project]);
             formRef.current?.reset();
-        } catch (error) {
-            setError('Failed to create project: ' + (error as Error).message);
+            toast.success('Project created successfully');
+        } catch (error: any) {
+            toast.error(`Failed to create project: ${error.response?.data?.error || error.message || 'Unexpected error'}`);
         }
     };
 
@@ -55,7 +58,7 @@ const Projects: React.FC = () => {
                 setProjects(fetchedProjects.projects);
             })
             .catch((err) => {
-                setError('Failed to fetch projects: ' + err.message);
+                toast.error('Failed to fetch projects: ' + err.message);
             });
     }, []);
 
@@ -73,14 +76,13 @@ const Projects: React.FC = () => {
                             ref={projectNameRef}
                             required
                             className='border border-gray-300 rounded-md p-2 text-white'
+                            maxLength={30}
                         />
                         <button type="submit" className='btn btn-primary text-white rounded-md p-2'>Create</button>
                     </form>
                 </SimpleDialog>
             </header>
-            {error ? (
-                <p>Error: {error}</p>
-            ) : projects.length > 0 ? (
+            {projects.length > 0 ? (
                 <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                     {projects.map((project) => (
                         <ProjectComponent key={project.id} project={project} />

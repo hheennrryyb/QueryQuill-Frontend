@@ -207,16 +207,24 @@ const FileExplorer: React.FC = () => {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className="flex flex-col h-full overflow-scroll">
+      <div className="flex flex-col h-full overflow-scroll ">
       {/* Header */}
-      <header className="bg-primary text-primary-foreground p-4 flex justify-between flex-col gap-2 md:flex-row">
-        <div className="flex flex-col justify-start">
-          <h1 className="text-2xl font-bold">{projectDetails?.name}: File Explorer</h1>
-          <p className="text-sm text-left">Created at:{ new Date (projectDetails?.created_at || '').toLocaleDateString()}</p>
-          <p className="text-sm text-left">Updated at: { new Date (projectDetails?.updated_at || '').toLocaleDateString()}</p>
+      <header className="bg-primary text-primary-foreground p-4 flex justify-between  gap-2 flex-row">
+        <div className="flex flex-col justify-start md:max-w-96 pr-4">
+          <h1 className="text-2xl font-bold">File Explorer: {projectDetails?.name}</h1>
+          <p className="text-sm text-left">Created at: {new Date(projectDetails?.created_at || '').toLocaleDateString()}</p>
+          <p className="text-sm text-left">Updated at: {new Date(projectDetails?.updated_at || '').toLocaleDateString()}</p>
+          <SimpleDialog triggerText="Delete Project" title="Delete Project" className='bg-red-500 border border-white text-center w-fit mt-2 text-sm'>
+            <div className='flex flex-row gap-2 align-middle items-center'>
+              Are you sure you want to delete this project? This action cannot be undone.
+              <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer bg-red-500' onClick={handleDeleteProject}>
+                <Trash size={16} className='text-white' />
+              </button>
+            </div>
+          </SimpleDialog>
         </div>
-      <div className='flex flex-col gap-2 md:flex-row'>
-      <SimpleDialog triggerText="1. Upload Files" title="Upload Files" className='bg-primary border border-white'>
+      <div className='flex flex-col gap-2 md:flex-row justify-center items-center'>
+        <SimpleDialog triggerText="1. Upload Files" title="Upload Files" className='bg-primary border border-white w-full min-w-32 text-sm md:w-fit md:text-base h-full md:max-h-16'>
           <h3 className='text-black mb-2'>Website URL</h3>
           <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-8'>
             <input type="text" placeholder="URL" name="url" className='border border-gray-300 rounded-md p-2 text-white' />
@@ -246,7 +254,7 @@ const FileExplorer: React.FC = () => {
             </button>
           </form>
         </SimpleDialog>
-        <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer border border-white' onClick={handleProcessAll} disabled={!!processingTaskId}>
+        <button className='btn btn-primary btn-sm min-w-[220px] h-full md:max-h-16 flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer border border-white w-full text-sm md:w-fit md:text-base' onClick={handleProcessAll} disabled={!!processingTaskId}>
           <CloudCog size={32} />
           {processingTaskId ? (
             <div className='flex flex-row gap-2 align-middle items-center'>
@@ -257,17 +265,9 @@ const FileExplorer: React.FC = () => {
             </div>
           ): <p>2. Process All Documents</p>}
         </button>
-        <Link to={`/chat/${projectId}`} className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer text-white border border-white'>
-          <BotMessageSquare size={32} />3. Chat with Documents
+        <Link to={`/chat/${projectId}`} className='btn btn-primary btn-sm h-full md:max-h-16 flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer text-white border border-white w-full text-sm md:w-fit md:text-base'>
+          <BotMessageSquare size={32} /><p className='text-white text-center'>3. Chat with Documents</p>
         </Link>
-        <SimpleDialog triggerText="Delete Project" title="Delete Project">
-        <div className='flex flex-row gap-2 align-middle items-center'>
-          Are you sure you want to delete this project? This action cannot be undone.
-          <button className='btn btn-primary btn-sm flex flex-row gap-2 align-middle items-center rounded-md p-4 cursor-pointer bg-red-500' onClick={handleDeleteProject}>
-            <Trash size={16} className='text-white' />
-          </button>
-          </div>
-        </SimpleDialog>
       </div>
       </header>
 
@@ -281,7 +281,7 @@ const FileExplorer: React.FC = () => {
             <ScrollArea.Viewport className="w-full h-full">
               <div className="p-4">
                 <h2 className="text-lg font-semibold mb-4">Files</h2>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {projectDetails?.files.map((file) => (
                     <HoverCard.Root key={file.id}>
                       <HoverCard.Trigger asChild>

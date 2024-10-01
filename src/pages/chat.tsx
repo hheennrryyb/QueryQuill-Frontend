@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, Bot, Copy, ArrowLeft, UserRound } from "lucide-react"
+import { Send, Bot, Copy, ArrowLeft, UserRound, Info, X , Loader} from "lucide-react"
 import ReactMarkdown from 'react-markdown'
 import ChatbotAPI from '../lib/chatbot.ts'; // Renamed import
 import { useParams } from 'react-router-dom';
@@ -41,7 +41,7 @@ const ScrollArea = ({ children }: { children: React.ReactNode }) => {
 const TypingIndicator = () => (
   <div className="flex items-center space-x-2 mb-4">
     <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground mr-2">
-      <Bot size={24} />
+      <Bot size={24} className="text-white" />
     </div>
     <div className="flex space-x-2">
       <div className="w-3 h-3 rounded-full bg-secondary animate-bounce"></div>
@@ -63,6 +63,9 @@ With access to all the documents in your project, I'm here to help you find the 
   const [isTyping, setIsTyping] = useState(false)
   const [chatbot] = useState(() => new ChatbotAPI());
   const [projectDetails, setProjectDetails] = useState<any>(null);
+  const [context, setContext] = useState<string>('');
+  const [contextVisible, setContextVisible] = useState<boolean>(false);
+  const [isContextLoading, setIsContextLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,6 +73,15 @@ With access to all the documents in your project, I'm here to help you find the 
       getProjectDetails(projectId).then(setProjectDetails);
     }
   }, [projectId]);
+
+
+  const handleGetContext = async (query: string, projectId: string, userMessage: string) => {
+    setContextVisible(true);
+    setIsContextLoading(true);
+    const context = await chatbot.getRelevantContext(query, projectId);
+    setContext("The following context for the query '" + userMessage + "' was found: \n\n" + context);
+    setIsContextLoading(false);
+  }
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -91,6 +103,7 @@ With access to all the documents in your project, I'm here to help you find the 
   }
 
   return (
+    <div className='flex flex-col h-full'>
     <div className="bg-background rounded-lg shadow-lg w-full max-w-2xl mx-auto h-full flex flex-col ">
       <div onClick={() => {
         navigate(`/file-explorer/${projectId}`);
@@ -117,8 +130,8 @@ With access to all the documents in your project, I'm here to help you find the 
                   remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                   rehypePlugins={[rehypeKatex, rehypeHighlight]}
                   components={{
-                    ul: ({node, ...props}) => <ul className="list-disc pl-4" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal pl-4" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc ml-5" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal ml-5" {...props} />,
                     li: ({node, ...props}) => <li className="my-1" {...props} />,
                     strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
                     p: ({node, ...props}) => <p className="mb-4" {...props} />,
@@ -148,7 +161,12 @@ With access to all the documents in your project, I'm here to help you find the 
                   )}
                   </div>
                 ) : (
-                  message.text
+                  <div className="flex flex-col w-full">
+                    <p className="text-right">{message.text}</p>
+                    <button className="text-muted-foreground p-2 m-0 w-fit self-end mt-2" onClick={() => {handleGetContext(message.text, projectId ?? '', message.text)}}>
+                    <Info className="h-4 w-4" />
+                  </button>
+                  </div>
                 )}
                 
               </div>
@@ -180,5 +198,32 @@ With access to all the documents in your project, I'm here to help you find the 
         </form>
       </div>
     </div>
+    {contextVisible && (
+      <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-10 rounded-lg shadow-lg max-h-[80vh] overflow-scroll relative">
+        <button className="text-muted-foreground p-2 m-0 absolute top-8 right-8" onClick={() => {setContextVisible(false)}}>
+          <X className="h-4 w-4" />
+        </button>
+        {isContextLoading ? (
+          <div className="text-center flex flex-col items-center justify-center"><Loader size={24} className="text-primary animate-spin mb-4" /><h3 className="text-lg">Your Context for the Query is Loading...</h3 ></div>
+        ) : (
+          <ReactMarkdown 
+          className="prose dark:prose-invert p-4"
+          remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+          rehypePlugins={[rehypeKatex, rehypeHighlight]}
+          components={{
+            ul: ({node, ...props}) => <ul className="list-disc ml-4" {...props} />,
+            ol: ({node, ...props}) => <ol className="list-decimal ml-4" {...props} />,
+            li: ({node, ...props}) => <li className="my-1" {...props} />,
+            strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+            p: ({node, ...props}) => <p className="mb-4" {...props} />,
+          }}
+          >{context}</ReactMarkdown>
+        )}
+        </div>
+      </div>
+    )}
+    </div>
+
   )
 }
