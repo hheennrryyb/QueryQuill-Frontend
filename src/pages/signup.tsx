@@ -35,7 +35,7 @@ const Signup = () => {
             <input
                 type="text"
                 placeholder="Username"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-white"
+                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-gray-700 bg-white"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -46,7 +46,7 @@ const Signup = () => {
             <input
                 type="email"
                 placeholder="Email"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-white"
+                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-gray-700 bg-white"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -57,7 +57,7 @@ const Signup = () => {
             <input
                 type="password"
                 placeholder="Password"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-white"
+                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 text-gray-700 bg-white"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

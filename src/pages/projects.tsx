@@ -4,6 +4,8 @@ import SimpleDialog from '../components/dialog';
 import { Link } from 'react-router-dom';
 import { LibraryBig } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { MessageSquare, FolderOpen } from 'lucide-react';
+
 interface Project {
     // Define project properties here, e.g.:
     id: string;
@@ -15,14 +17,25 @@ interface Project {
 
 const ProjectComponent = ({ project }: { project: Project }) => {
     return (
-        <div className='p-4 rounded-lg shadow-md outline outline-2 outline-secondary'>
-            <div className='flex flex-row gap-2'><LibraryBig size={32}/> <h1 className='text-2xl font-bold'>{project.name}</h1></div>
-            <p className='text-gray-700'>{project.description}</p>
-            <p>Created at: {new Date(project.created_at).toLocaleString()}</p>
-            <p>Updated at: {new Date(project.updated_at).toLocaleString()}</p>
-            <div className='flex gap-2 mt-2 justify-start'>
-                <Link to={`/chat/${project.id}`} className='btn btn-primary'>Chat</Link>
-                <Link to={`/file-explorer/${project.id}`} className='btn btn-secondary'>File Explorer</Link>
+        <div className='p-4 rounded-lg shadow-md outline outline-2 outline-secondary flex flex-col h-full'>
+            <div className='flex flex-row gap-2 items-center mb-2'>
+                <LibraryBig size={32}/>
+                <h1 className='text-2xl font-bold'>{project.name}</h1>
+            </div>
+            <p className='text-gray-700 flex-grow'>{project.description}</p>
+            <div className='mt-4'>
+                <p className='text-sm'>Created: {new Date(project.created_at).toLocaleString()}</p>
+                <p className='text-sm'>Updated: {new Date(project.updated_at).toLocaleString()}</p>
+            </div>
+            <div className='flex gap-2 mt-4 justify-start'>
+                <Link to={`/chat/${project.id}`} className='btn btn-primary flex items-center'>
+                    <MessageSquare size={16} className="mr-2" />
+                    Chat
+                </Link>
+                <Link to={`/file-explorer/${project.id}`} className='btn btn-secondary flex items-center'>
+                    <FolderOpen size={16} className="mr-2" />
+                    File Explorer
+                </Link>
             </div>
         </div>
     );
@@ -63,9 +76,9 @@ const Projects: React.FC = () => {
     }, []);
 
     return (
-        <div>
-            <header className="bg-primary text-primary-foreground px-8 py-4 flex justify-between">
-                <div className="flex flex-col justify-start">
+        <div className='h-full flex flex-col'>
+            <header className="bg-primary text-primary-foreground px-8 py-4 flex justify-between gap-4 flex-col md:flex-row">
+                <div className="">
                     <h1 className="text-2xl font-bold">Projects</h1>
                 </div>
                 <SimpleDialog triggerText="Create New Project" title="Create New Project">
@@ -83,17 +96,18 @@ const Projects: React.FC = () => {
                 </SimpleDialog>
             </header>
             {projects.length > 0 ? (
-                <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                    {projects.map((project) => (
-                        <ProjectComponent key={project.id} project={project} />
-                    ))}
+                <div className='flex-1 overflow-auto'>
+                    <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr pb-[220px] md:pb-[100px]'>
+                        {projects.map((project) => (
+                            <ProjectComponent key={project.id} project={project} />
+                        ))}
+                    </div>
                 </div>
             ) : (
                 <div>
-                    <p className='text-2xl font-bold flex flex-row gap-2 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'><LibraryBig size={32}/> No projects found</p>
+                    <p className='text-2xl font-bold flex flex-row gap-2 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full justify-center'><LibraryBig size={32}/> No projects found</p>
                 </div>
             )}
-            
         </div>
     );
 };
