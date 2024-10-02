@@ -31,6 +31,10 @@ interface File {
   uploaded_at: string;
 }
 
+const MAX_FILES = 10;
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const ALLOWED_TYPES = ['application/pdf', 'text/html', 'text/plain'];
+
 const FileExplorer: React.FC = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -47,6 +51,14 @@ const FileExplorer: React.FC = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const windowWidth = useWindowWidth();
   const isMobile = windowWidth < 768; // Adjust this breakpoint as needed
+
+  const [isFileLimitReached, setIsFileLimitReached] = useState(false);
+
+  useEffect(() => {
+    if (projectDetails) {
+      setIsFileLimitReached(projectDetails.files.length >= MAX_FILES);
+    }
+  }, [projectDetails]);
 
   const handleProcessAll = async () => {
     if (projectId) {
@@ -105,6 +117,10 @@ const FileExplorer: React.FC = () => {
 
   const handleScrapeUrl = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isFileLimitReached) {
+      toast.error(`File limit of ${MAX_FILES} has been reached. Please delete some files before scraping more.`);
+      return;
+    }
     const formData = new FormData(e.target as HTMLFormElement);
     const url = formData.get('url') as string;
     if (projectId) {
@@ -125,13 +141,36 @@ const FileExplorer: React.FC = () => {
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isFileLimitReached) {
+      toast.error(`File limit of ${MAX_FILES} has been reached. Please delete some files before uploading more.`);
+      return;
+    }
     setUploading(true);
     setUploadProgress(0);
     const formData = new FormData(e.target as HTMLFormElement);
     const fileList = formData.getAll('documents');
     
-    // Filter out non-File entries and cast to File[]
-    const domFiles = fileList.filter((item): item is globalThis.File => item instanceof globalThis.File);
+    // Filter out non-File entries and apply size and type checks
+    const domFiles = fileList.filter((item): item is globalThis.File => {
+      if (!(item instanceof File)) return false;
+      
+      if (item.size > MAX_FILE_SIZE) {
+        toast.error(`File ${item.name} is too large. Maximum size is 20MB.`);
+        return false;
+      }
+      
+      if (!ALLOWED_TYPES.includes(item.type)) {
+        toast.error(`File ${item.name} is not an allowed type. Allowed types are PDF, HTML, and TXT.`);
+        return false;
+      }
+      
+      return true;
+    });
+
+    if (domFiles.length === 0) {
+      setUploading(false);
+      return;
+    }
     
     try {
       await uploadDocumentsToProject(projectId as string, domFiles, (progress) => {
@@ -161,6 +200,10 @@ const FileExplorer: React.FC = () => {
 
   const handleUploadText = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isFileLimitReached) {
+      toast.error(`File limit of ${MAX_FILES} has been reached. Please delete some files before adding more text documents.`);
+      return;
+    }
     const formData = new FormData(e.target as HTMLFormElement);
     const documentName = formData.get('documentName') as string;
     const documentContent = formData.get('documentContent') as string;
@@ -192,7 +235,9 @@ const FileExplorer: React.FC = () => {
       await deleteDocument(selectedFile.id, projectId as string);
       setSelectedFile(null);
       setPreviewContent(null);
-      getProjectDetails(projectId).then(setProjectDetails);
+      const updatedDetails = await getProjectDetails(projectId);
+      setProjectDetails(updatedDetails);
+      setIsFileLimitReached(updatedDetails.files.length >= MAX_FILES);
       toast.success('Document deleted');
     }
   };
@@ -240,34 +285,44 @@ const FileExplorer: React.FC = () => {
                 title="Upload Files" 
                 className='bg-primary border border-white w-full md:w-auto text-sm md:text-base font-semibold py-2 px-4'
               >
-                <h3 className='text-black mb-2'>Website URL</h3>
-                <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-8'>
-                  <input type="text" placeholder="URL" name="url" className='border border-gray-300 rounded-md p-2 text-white' />
-                  <button type="submit" className="btn btn-primary text-white mt-2">
-                    Scrape URL
-                  </button>
-                </form>
-                <div className='text-black mb-2'>Local Files (PDF, HTML, TXT, etc.)</div>
-                <form onSubmit={handleUpload} className='flex flex-col gap-2 mb-8'>
-                  <input type="file" multiple name="documents" disabled={uploading} className="btn btn-primary" />
-                  <button type="submit" disabled={uploading} className="btn btn-primary text-white mt-2">
-                    {uploading ? 'Uploading...' : 'Upload'}
-                  </button>
-                  {uploading && (
-                    <div>
-                      <progress value={uploadProgress} max="100" />
-                      <span>{Math.round(uploadProgress)}%</span>
+                <div className='bg-gray-100 p-4 rounded-lg'>
+                  {isFileLimitReached ? (
+                    <div className="text-red-500 mb-4">
+                      File limit of {MAX_FILES} has been reached. Please delete some files before uploading more.
                     </div>
+                  ) : (
+                    <>
+                      <h3 className='text-black mb-2'>Website URL</h3>
+                      <form onSubmit={handleScrapeUrl} className='flex flex-col gap-2 mb-8'>
+                        <input type="text" placeholder="URL" name="url" className='bg-white text-black border border-gray-300 rounded-md p-2' />
+                        <button type="submit" className="bg-white text-black border border-gray-300 rounded-md p-2 hover:bg-gray-100">
+                          Scrape URL
+                        </button>
+                      </form>
+                      <div className='text-black mb-2'>Local Files (PDF, HTML, TXT, etc.)</div>
+                      <form onSubmit={handleUpload} className='flex flex-col gap-2 mb-8'>
+                        <input type="file" multiple name="documents" disabled={uploading} className="bg-white text-black border border-gray-300 rounded-md p-2" />
+                        <button type="submit" disabled={uploading} className="bg-white text-black border border-gray-300 rounded-md p-2 hover:bg-gray-100">
+                          {uploading ? 'Uploading...' : 'Upload'}
+                        </button>
+                        {uploading && (
+                          <div>
+                            <progress value={uploadProgress} max="100" className="w-full" />
+                            <span className="text-black">{Math.round(uploadProgress)}%</span>
+                          </div>
+                        )}
+                      </form>
+                      <div className='text-black mb-2'>Paste Text</div>
+                      <form onSubmit={handleUploadText} className='flex flex-col gap-2 mb-8'>
+                        <input type="text" placeholder="Document Name" name="documentName" className='bg-white text-black border border-gray-300 rounded-md p-2' />
+                        <textarea placeholder="Document Content" name="documentContent" className='bg-white text-black border border-gray-300 rounded-md p-2 h-40' />
+                        <button type="submit" className="bg-white text-black border border-gray-300 rounded-md p-2 hover:bg-gray-100">
+                          Upload Text
+                        </button>
+                      </form>
+                    </>
                   )}
-                </form>
-                <div className='text-black mb-2'>Paste Text</div>
-                <form onSubmit={handleUploadText} className='flex flex-col gap-2 mb-8'>
-                  <input type="text" placeholder="Document Name" name="documentName" className='border border-gray-300 rounded-md p-2 text-white' />
-                  <textarea placeholder="Document Content" name="documentContent" className='border border-gray-300 rounded-md p-2 text-white h-40' />
-                  <button type="submit" className="btn btn-primary text-white mt-2">
-                    Upload Text
-                  </button>
-                </form>
+                </div>
               </SimpleDialog>
               <button 
                 className='btn btn-primary flex items-center justify-center gap-2 w-full md:w-auto border border-white text-sm md:text-base font-semibold py-2 px-4' 
@@ -292,7 +347,7 @@ const FileExplorer: React.FC = () => {
             </div>
           </div>
           <Collapsible.Root className="mt-4">
-            <Collapsible.Trigger className="flex items-center text-sm text-white border border-white rounded-md py-2 px-4">
+            <Collapsible.Trigger className="flex items-center text-sm text-black border border-white rounded-md py-2 px-4 bg-white">
               <ChevronDown size={16} />
               <span>Project Actions</span>
             </Collapsible.Trigger>
@@ -300,7 +355,7 @@ const FileExplorer: React.FC = () => {
               <SimpleDialog 
                 triggerText="Delete Project" 
                 title="Delete Project" 
-                className='bg-red-500 border border-white text-center w-full md:w-fit mt-2 text-sm md:text-base font-semibold py-2 px-4'
+                className='bg-red-500 border text-sm border-white text-center w-full md:w-fit mt-2 py-2 px-4'
               >
                 <div className='flex flex-row gap-2 align-middle items-center'>
                   Are you sure you want to delete this project? This action cannot be undone.
@@ -326,8 +381,19 @@ const FileExplorer: React.FC = () => {
                 <div className="p-4">
                   <h2 className="text-lg font-semibold mb-4">Files</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {projectDetails?.files.map((file) => (
-                      <HoverCard.Root key={file.id}>
+                    {projectDetails?.files.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground col-span-full">
+                        <FileIcon size={48} />
+                        <p className="mt-2">No files uploaded yet.</p>
+                        <div className="mt-4 text-sm bg-muted p-4 rounded-md">
+                          <p className="mt-2">1. Upload some files to get started.</p>
+                          <p className="mt-2">2. Process all documents to create a chat-ready version.</p>
+                          <p className="mt-2">3. Chat with your documents.</p>
+                        </div>
+                      </div>
+                    ) : (
+                      projectDetails?.files.map((file) => (
+                        <HoverCard.Root key={file.id}>
                         <HoverCard.Trigger asChild>
                           <div
                             className={`p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -341,14 +407,13 @@ const FileExplorer: React.FC = () => {
                         </HoverCard.Trigger>
                         <HoverCard.Portal>
                           <HoverCard.Content className="bg-popover text-popover-foreground p-4 rounded-md shadow-md">
-                            <h3 className="font-semibold">{file.name}</h3>
-                            <p>Type: {file.type}</p>
+                            <h3 className="font-semibold">{file.name.split('/').pop()}</h3>
                             <p>Size: {(file.file_size / 1000).toFixed(2)} kB</p>
                             <p>Uploaded: {new Date(file.uploaded_at).toLocaleString()}</p>
                           </HoverCard.Content>
                         </HoverCard.Portal>
                       </HoverCard.Root>
-                    ))}
+                    )))}
                   </div>
                 </div>
               </ScrollArea.Viewport>
@@ -389,7 +454,7 @@ const FileExplorer: React.FC = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground pt-[44px]">
                         <FileIcon size={48} />
                         <p className="mt-2">Select a file to preview</p>
                       </div>

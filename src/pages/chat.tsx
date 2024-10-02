@@ -67,6 +67,7 @@ With access to all the documents in your project, I'm here to help you find the 
   const [contextVisible, setContextVisible] = useState<boolean>(false);
   const [isContextLoading, setIsContextLoading] = useState(false);
   const navigate = useNavigate();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (projectId) {
@@ -74,6 +75,21 @@ With access to all the documents in your project, I'm here to help you find the 
     }
   }, [projectId]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setContextVisible(false);
+      }
+    };
+
+    if (contextVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [contextVisible]);
 
   const handleGetContext = async (query: string, projectId: string, userMessage: string) => {
     setContextVisible(true);
@@ -103,127 +119,150 @@ With access to all the documents in your project, I'm here to help you find the 
   }
 
   return (
-    <div className='flex flex-col h-full'>
-    <div className="bg-background rounded-lg shadow-lg w-full max-w-2xl mx-auto h-full flex flex-col ">
-      <div onClick={() => {
-        navigate(`/file-explorer/${projectId}`);
-      }} className="text-muted-foreground p-2 m-0 w-fit self-start flex items-center gap-2 cursor-pointer"> <ArrowLeft size={16} /> Back to File Explorer </div>
-      <div className="p-4 border-b border-border">
-        <h2 className="text-2xl font-bold text-primary">Chatbot</h2>
-        <p>Project Name: {projectDetails?.name}</p>
-        <p>Last Updated: { new Date(projectDetails?.updated_at).toLocaleString()}</p>
-      </div>
-      <div className="p-4 flex-grow overflow-hidden">
-        <ScrollArea>
-          {messages.map((message) => (
-            <div key={message.id} className={`flex items-start mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {message.sender === 'bot' && (
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white mr-2 ">
-                  <Bot size={24} className="text-white"/>
+    <div className="flex flex-col h-full bg-gray-100">
+      <header className="bg-white shadow-sm p-4">
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <button
+            onClick={() => navigate(`/file-explorer/${projectId}`)}
+            className="flex items-center border border-gray-300 rounded-md p-2 bg-white transition-colors text-sm"
+          >
+            <ArrowLeft size={16} className="mr-2" /> File Explorer
+          </button>
+          <div className="text-right">
+            <h2 className="text-xl font-bold text-gray-900">{projectDetails?.name}</h2>
+            <p className="text-sm text-gray-500">Last Updated: {new Date(projectDetails?.updated_at).toLocaleString()}</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-grow overflow-hidden">
+        <div className="max-w-4xl mx-auto h-full flex flex-col">
+          <div className="flex-grow overflow-hidden ">
+            <ScrollArea>
+              {messages.map((message) => (
+                <div key={message.id} className={`flex mt-6 items-start mb-6 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {message.sender === 'bot' && (
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white mr-2 ">
+                      <Bot size={24} className="text-white"/>
+                    </div>
+                  )}
+                  <div className={`rounded-lg p-3 max-w-[80%] text-white ${message.sender === 'user' ? 'bg-white text-black' : 'bg-secondary'}`}>
+                    {message.sender === 'bot' ? (
+                      <div className="flex flex-col w-full">
+                      <ReactMarkdown 
+                      className="prose dark:prose-invert "
+                      remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+                      rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                      components={{
+                        ul: ({node, ...props}) => <ul className="list-disc ml-5" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal ml-5" {...props} />,
+                        li: ({node, ...props}) => <li className="my-1" {...props} />,
+                        strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+                        p: ({node, ...props}) => <p className="mb-4" {...props} />,
+                        code({ inline, className, children, ...props }: React.ComponentProps<'code'> & { inline?: boolean }) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          return !inline && match ? (
+                            <pre className={`language-${match[1]} p-2 rounded-md text-wrap`}>
+                              <code className={`language-${match[1]}`} {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                      >{message.text}</ReactMarkdown>
+                      {message.id !== 1 && (
+                      <button className="text-muted-foreground p-2 m-0 w-fit self-end" onClick={() => {
+                          navigator.clipboard.writeText(message.text);
+                        toast.success('Copied to clipboard');
+                      }}>
+                        <Copy className="h-4 w-4" />
+                      </button>
+                      )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col w-full">
+                        <p className="text-black">{message.text}</p>
+                        <button className="text-muted-foreground p-[5px] m-0 w-fit self-end mt-2 bg-gray-200 rounded-md" onClick={() => {handleGetContext(message.text, projectId ?? '', message.text)}}>
+                        <Info className="h-4 w-4" />
+                      </button>
+                      </div>
+                    )}
+                    
+                  </div>
+                  {message.sender === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white ml-2">
+                      <UserRound />
+                    </div>
+                  )}
                 </div>
-              )}
-              <div className={`rounded-lg p-3 max-w-[80%] text-white ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-secondary'}`}>
-                {message.sender === 'bot' ? (
-                  <div className="flex flex-col w-full">
-                  <ReactMarkdown 
-                  className="prose dark:prose-invert "
+              ))}
+              {isTyping && <TypingIndicator />}
+            </ScrollArea>
+          </div>
+
+          <div className="p-4 bg-white border-t border-gray-200 rounded-t-[1.5rem]">
+            <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex items-center gap-2">
+              <input
+                className="flex-grow px-4 py-2 rounded-full bg-white text-black border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Type your message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+              <button
+                type="submit"
+                disabled={isTyping}
+                className="p-2 rounded-full bg-secondary text-white hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              >
+                <Send className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+
+      {contextVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div 
+            ref={modalRef}
+            className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col relative"
+          >
+            <button 
+              className="absolute bg-white bg-opacity-50 top-2 right-2 text-black border-[2px] border-gray-200 rounded-md p-2 hover:text-gray-700 focus:outline-none"
+              onClick={() => setContextVisible(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div className="p-6 overflow-y-auto flex-grow pt-12">
+              {isContextLoading ? (
+                <div className="text-center flex flex-col items-center justify-center h-full">
+                  <Loader size={24} className="text-primary animate-spin mb-4" />
+                  <h3 className="text-lg">Your Context for the Query is Loading...</h3>
+                </div>
+              ) : (
+                <ReactMarkdown 
+                  className="prose max-w-none dark:prose-invert"
                   remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                   rehypePlugins={[rehypeKatex, rehypeHighlight]}
                   components={{
-                    ul: ({node, ...props}) => <ul className="list-disc ml-5" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal ml-5" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc ml-4" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal ml-4" {...props} />,
                     li: ({node, ...props}) => <li className="my-1" {...props} />,
                     strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
                     p: ({node, ...props}) => <p className="mb-4" {...props} />,
-                    code({ inline, className, children, ...props }: React.ComponentProps<'code'> & { inline?: boolean }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return !inline && match ? (
-                        <pre className={`language-${match[1]} p-2 rounded-md text-wrap`}>
-                          <code className={`language-${match[1]}`} {...props}>
-                            {children}
-                          </code>
-                        </pre>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    }
                   }}
-                  >{message.text}</ReactMarkdown>
-                  {message.id !== 1 && (
-                  <button className="text-muted-foreground p-2 m-0 w-fit self-end" onClick={() => {
-                      navigator.clipboard.writeText(message.text);
-                    toast.success('Copied to clipboard');
-                  }}>
-                    <Copy className="h-4 w-4" />
-                  </button>
-                  )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col w-full">
-                    <p className="text-right">{message.text}</p>
-                    <button className="text-muted-foreground p-2 m-0 w-fit self-end mt-2" onClick={() => {handleGetContext(message.text, projectId ?? '', message.text)}}>
-                    <Info className="h-4 w-4" />
-                  </button>
-                  </div>
-                )}
-                
-              </div>
-              {message.sender === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white ml-2">
-                  <UserRound />
-                </div>
+                >
+                  {context}
+                </ReactMarkdown>
               )}
             </div>
-          ))}
-          {isTyping && <TypingIndicator />}
-        </ScrollArea>
-      </div>
-      <div className="p-4 border-t border-border">
-        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex w-full gap-2">
-          <input
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Type your message..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button
-            type="submit"
-            disabled={isTyping}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </form>
-      </div>
-    </div>
-    {contextVisible && (
-      <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-10 rounded-lg shadow-lg max-h-[80vh] overflow-scroll relative">
-        <button className="text-muted-foreground p-2 m-0 absolute top-8 right-8" onClick={() => {setContextVisible(false)}}>
-          <X className="h-4 w-4" />
-        </button>
-        {isContextLoading ? (
-          <div className="text-center flex flex-col items-center justify-center"><Loader size={24} className="text-primary animate-spin mb-4" /><h3 className="text-lg">Your Context for the Query is Loading...</h3 ></div>
-        ) : (
-          <ReactMarkdown 
-          className="prose dark:prose-invert p-4"
-          remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-          rehypePlugins={[rehypeKatex, rehypeHighlight]}
-          components={{
-            ul: ({node, ...props}) => <ul className="list-disc ml-4" {...props} />,
-            ol: ({node, ...props}) => <ol className="list-decimal ml-4" {...props} />,
-            li: ({node, ...props}) => <li className="my-1" {...props} />,
-            strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
-            p: ({node, ...props}) => <p className="mb-4" {...props} />,
-          }}
-          >{context}</ReactMarkdown>
-        )}
+          </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
-
   )
 }

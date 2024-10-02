@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { LibraryBig } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { MessageSquare, FolderOpen } from 'lucide-react';
+import LoadingSpinner from '../components/loading-spinner';
 
 interface Project {
     // Define project properties here, e.g.:
@@ -43,6 +44,7 @@ const ProjectComponent = ({ project }: { project: Project }) => {
 
 const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const projectNameRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
@@ -69,9 +71,11 @@ const Projects: React.FC = () => {
         getProjects()
             .then((fetchedProjects) => {
                 setProjects(fetchedProjects.projects);
+                setTimeout(() => setIsLoading(false), 2000);
             })
             .catch((err) => {
                 toast.error('Failed to fetch projects: ' + err.message);
+                setTimeout(() => setIsLoading(false), 2000);
             });
     }, []);
 
@@ -88,7 +92,7 @@ const Projects: React.FC = () => {
                             placeholder="Project Name"
                             ref={projectNameRef}
                             required
-                            className='border border-gray-300 rounded-md p-2 text-white'
+                            className='border border-gray-300 rounded-md p-2 text-black bg-white'
                             maxLength={30}
                         />
                         <button type="submit" className='btn btn-primary text-white rounded-md p-2'>Create</button>
@@ -104,8 +108,14 @@ const Projects: React.FC = () => {
                     </div>
                 </div>
             ) : (
-                <div>
-                    <p className='text-2xl font-bold flex flex-row gap-2 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full justify-center'><LibraryBig size={32}/> No projects found</p>
+                <div className='flex items-center justify-center h-full'>
+                    {isLoading ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <p className='text-2xl font-bold flex flex-row gap-2 items-center'>
+                            <LibraryBig size={32}/> No projects found
+                        </p>
+                    )}
                 </div>
             )}
         </div>

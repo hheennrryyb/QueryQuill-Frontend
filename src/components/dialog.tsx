@@ -25,7 +25,7 @@ const SimpleDialog = ({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 bg-black bg-opacity-25" />
         <DialogPrimitive.Content className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b">
               <DialogPrimitive.Title className="text-lg font-medium">
                 {title}
@@ -34,7 +34,7 @@ const SimpleDialog = ({
                 <X className="w-5 h-5" />
               </DialogPrimitive.Close>
             </div>
-            <div className="p-4">
+            <div className="p-4 overflow-y-auto flex-grow">
               {children}
             </div>
           </div>
