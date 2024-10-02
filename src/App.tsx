@@ -14,6 +14,7 @@ import { AuthProvider } from './contexts/auth-context';
 import { ProfileProvider } from './contexts/profile-context';
 import Nav from './components/nav'; // Assuming you have a separate Nav component
 import { Toaster } from 'react-hot-toast';
+import GoogleAnalytics from './components/GoogleAnalytics'; // Add this import
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             </Routes>
             <Toaster />
           </div>
+          <GoogleAnalytics /> {/* Add this line */}
         </Router>
       </AuthProvider>
     </ProfileProvider>
