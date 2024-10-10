@@ -1,39 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/auth-context';
+import { LibraryBig, LogIn, LogOut, User, Home } from 'lucide-react';
 
 const Nav: React.FC = () => {
   const { isAuthenticated, logout, isLoading } = useAuth();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <nav className="" id="nav">
-      <ul className="bg-secondary flex items-center" id="nav-container">
-        <li className="mr-auto">
-          <Link to="/">
-            <img src="/QueryQuillLogoHorizontal.png" alt="QueryQuill Logo" className="h-12 hidden md:block" />
-            <img src="/full_icon.png" alt="QueryQuill Logo" className=" max-h-12 md:hidden aspect-square" />
+    <nav 
+      className="min-h-[400px] max-h-[50vh] bg-white bg-opacity-10 text-white transition-all duration-300 ease-in-out overflow-hidden rounded-xl backdrop-filter backdrop-blur-md shadow-md"
+      style={{ width: isExpanded ? '150px' : '60px' }}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
+    >
+      <ul className="flex flex-col py-0 w-full h-full">
+        <li className="mb-8 mt-4">
+          <Link to="/" className="flex items-center px-4 relative">
+            <Home size={24} className='text-white absolute' />
+            <span className={`text-white ml-8 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>Home</span>
           </Link>
         </li>
-        <li>
-          <Link to="/projects" className="text-white hover:text-gray-300">Projects</Link>
+        <li className="mb-4">
+          <Link to="/projects" className="flex items-center px-4 relative">
+            <LibraryBig size={24} className='text-white absolute' />
+            <span className={`text-white ml-8 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>Projects</span>
+          </Link>
         </li>
-        {/* <li>
-          <Link to="/file-explorer" className="text-white hover:text-gray-300">File Explorer</Link>
-        </li> */}
-        <li>
-          <Link to="/user" className="text-white hover:text-gray-300">User</Link>
+        <li className="mb-4">
+          <Link to="/user" className="flex items-center px-4 relative">
+            <User size={24} className='text-white absolute' />
+            <span className={`text-white ml-8 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>User</span>
+          </Link>
         </li>
-        {!isLoading && (
-          isAuthenticated ? (
-            <li>
-              <button onClick={logout} className="text-white  btn btn-primary">Logout</button>
-            </li>
-          ) : (
-            <li>
-              <Link to="/login" className="text-white  btn btn-primary">Login</Link>
-            </li>
-          )
-        )}
+        <div className="mt-auto">
+          {!isLoading && (
+            isAuthenticated ? (
+              <li>
+                <button onClick={logout} className="flex items-center px-4 w-full relative">
+                  <LogOut size={24} className='text-white absolute' />
+                  <span className={`text-white ml-8 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>Logout</span>
+                </button>
+              </li>
+            ) : (
+              <li>
+                <Link to="/login" className="flex items-center px-4 relative">
+                  <LogIn size={24} className='text-white absolute' />
+                  <span className={`text-white ml-8 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>Login</span>
+                </Link>
+              </li>
+            )
+          )}
+        </div>
       </ul>
     </nav>
   );
