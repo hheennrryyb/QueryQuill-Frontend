@@ -20,11 +20,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #213547;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #1C9C58;
 }
 
 body {
@@ -139,15 +139,83 @@ button:focus-visible {
 
 @layer components {
   .btn {
-    @apply font-bold py-2 px-4 rounded transition duration-300 ease-in-out;
+    @apply font-medium py-2 px-4 rounded-[60px] transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-opacity-50;
+    @apply flex items-center justify-center gap-2;
   }
+
   .btn-default {
-    @apply bg-gray-500 text-white hover:bg-gray-600 hover:text-white;
+    @apply bg-gray-100 text-gray-800 hover:bg-gray-200;
+    @apply focus:ring-gray-300;
   }
+
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-accent hover:text-white;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply focus:ring-primary/50;
   }
+
   .btn-secondary {
-    @apply bg-secondary text-white hover:bg-accent hover:text-white;
+    @apply bg-secondary text-white hover:bg-secondary/90;
+    @apply focus:ring-secondary/50;
+    @apply flex items-center justify-center gap-2;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-current text-current;
+    @apply hover:text-secondary hover:border-secondary hover:bg-gray-200; 
+    @apply focus:border-secondary;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-gray-100 text-current;
+  }
+
+  .btn-link {
+    @apply bg-transparent underline-offset-4 hover:underline text-current;
+  }
+
+  .btn-sm {
+    @apply text-sm py-1 px-3;
+  }
+
+  .btn-lg {
+    @apply text-lg py-3 px-6;
+  }
+
+  .btn-icon {
+    @apply p-2 rounded-full;
+  }
+}
+
+.nav-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.nav-menu.expanded {
+  max-height: 300px; /* Adjust this value based on your content */
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-item {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.nav-menu.expanded .nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-menu.expanded .nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-menu.expanded .nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-menu.expanded .nav-item:nth-child(4) { animation-delay: 0.4s; }
+
+@layer base {
+  a:hover {
+    @apply text-link-hover;
   }
 }

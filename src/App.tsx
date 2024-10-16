@@ -23,7 +23,7 @@ function App() {
       <AuthProvider>
         <Router>
           <Nav />
-          <div id="window">
+          <div id="window" className="transition-all duration-300">
           <Routes>
             <Route path="/" element={<Home />} /> {/* Add the Home route */}
             <Route path="/login" element={<Login />} />

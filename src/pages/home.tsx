@@ -4,8 +4,8 @@ import { Github, Linkedin, FileText, Database, Server, Code, Lock, Brain, Cpu, B
 
 const Home: React.FC = () => {
   return (
-    <div className="h-full bg-gradient-to-br from-secondary via-secondary to-accent overflow-scroll px-4 md:px-12  ">
-        <div className="flex flex-col justify-center items-center h-1/2">
+    <div className="h-screen bg-gradient-to-br from-secondary via-secondary to-accent overflow-scroll px-4 md:px-12  ">
+        <div className="flex flex-col justify-center items-center">
             <div className="flex flex-row items-center relative mb-5 mt-20 animate-appear">
                 <img src={"/LogoShape.png"} alt="Query Quill Logo" className="w-40 animate-spin-slow" />
                 <span className="bg-clip-text blur-xl text-green-200 text-6xl font-bold absolute right-1/2 transform translate-x-1/2"><img src={"/Q@2x.png"} alt="Quill" className="w-12"/></span>
@@ -121,7 +121,7 @@ const SocialLink: React.FC<{ href: string; icon: React.ReactNode; name: string }
 const StepItem: React.FC<{ icon: React.ReactNode; step: number; title: string; description: string }> = ({ icon, step, title, description }) => (
   <div className="flex flex-col items-center text-center">
     <div className="text-white mb-2">{icon}</div>
-    <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center mb-2">{step}</div>
+    <div className="bg-secondary text-white rounded-full w-8 h-8 flex items-center justify-center mb-2">{step}</div>
     <h3 className="font-semibold text-white mb-2">{title}</h3>
     <p className="text-sm text-gray-200">{description}</p>
   </div>

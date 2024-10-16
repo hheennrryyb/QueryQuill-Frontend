@@ -63,14 +63,14 @@ const Signup = () => {
                 required
             />
           </div>
-          <div className="flex items-center justify-center">
-            <button className="px-4 py-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700">Sign Up</button>
+          <div className="flex items-center justify-start">
+            <button className="btn btn-secondary px-6 py-2 mt-4 rounded-lg ">Sign Up</button>
           </div>
         </form>
-        <div className="mt-4 text-center">
+        <div className="mt-4">
           Have an account already? <Link to="/login" className="text-blue-500 hover:text-blue-700">Login</Link>
         </div>
-        <div className="mt-4 text-center">
+        <div className="mt-4">
           By signing up, you agree to our:<br /> <Link to="/disclosure" className="text-blue-500 hover:text-blue-700">Data Privacy and File Upload Disclosure</Link>
         </div>
       </div>

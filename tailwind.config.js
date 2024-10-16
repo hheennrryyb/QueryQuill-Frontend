@@ -13,8 +13,11 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       colors: {
-        background: '#fff',
+        background: '#f3f4f6',
         foreground: '#2f2f2c',
+        link: {
+          hover: '#1C9C58',
+        },
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
@@ -24,8 +27,8 @@ export default {
           foreground: 'hsl(var(--popover-foreground))'
         },
         primary: {
-          DEFAULT: '#000',
-          foreground: '#fff'
+          DEFAULT: '#fff',
+          foreground: '#2f2f2c'
         },
         secondary: {
           DEFAULT: '#093120',

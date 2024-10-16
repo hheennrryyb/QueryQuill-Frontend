@@ -128,16 +128,16 @@ With access to all the documents in your project, I'm here to help you find the 
           >
             <ArrowLeft size={16} className="mr-2" /> File Explorer
           </button>
-          <div className="text-right">
-            <h2 className="text-xl font-bold text-gray-900">{projectDetails?.name}</h2>
-            <p className="text-sm text-gray-500">Last Updated: {new Date(projectDetails?.updated_at).toLocaleString()}</p>
+          <div className="pl-4 text-right mr-1">
+            <h2 className="text-xl font-bold text-gray-900 h-8">{projectDetails?.name}</h2>
+            <p className="text-sm text-gray-500 h-5">Last Updated: {new Date(projectDetails?.updated_at).toLocaleString()}</p>
           </div>
         </div>
       </header>
 
       <main className="flex-grow overflow-hidden">
         <div className="max-w-4xl mx-auto h-full flex flex-col">
-          <div className="flex-grow overflow-hidden ">
+          <div className="flex-grow overflow-hidden p-2 sm:p-4">
             <ScrollArea>
               {messages.map((message) => (
                 <div key={message.id} className={`flex mt-6 items-start mb-6 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -240,7 +240,7 @@ With access to all the documents in your project, I'm here to help you find the 
             <div className="p-6 overflow-y-auto flex-grow pt-12">
               {isContextLoading ? (
                 <div className="text-center flex flex-col items-center justify-center h-full">
-                  <Loader size={24} className="text-primary animate-spin mb-4" />
+                  <Loader size={24} className="text-black animate-spin mb-4" />
                   <h3 className="text-lg">Your Context for the Query is Loading...</h3>
                 </div>
               ) : (
