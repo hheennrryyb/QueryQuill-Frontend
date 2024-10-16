@@ -66,6 +66,9 @@ const FileExplorer: React.FC = () => {
         const response = await processAllDocuments(projectId);
         setProcessingTaskId(response.task_id);
         toast.success('Started processing all documents');
+        getTaskStatus(response.task_id).then((status) => {
+          setProcessingStatus(status.status);
+        });
       } catch (error) {
         toast.error('Error starting document processing');
       }
@@ -275,15 +278,15 @@ const FileExplorer: React.FC = () => {
         <header className="bg-primary text-primary-foreground p-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-2">
             <div className="flex flex-col justify-start md:max-w-96 pr-4">
-              <h1 className="text-2xl font-bold">{projectDetails?.name}</h1>
-              <p className="text-sm">Created: {new Date(projectDetails?.created_at || '').toLocaleDateString()}</p>
-              <p className="text-sm">Updated: {new Date(projectDetails?.updated_at || '').toLocaleDateString()}</p>
+              <h1 className="text-2xl font-bold h-8">{projectDetails?.name}</h1>
+              <p className="text-sm h-5">Created: {new Date(projectDetails?.created_at || '').toLocaleDateString()}</p>
+              <p className="text-sm h-5">Updated: {new Date(projectDetails?.updated_at || '').toLocaleDateString()}</p>
             </div>
             <div className='flex flex-col md:flex-row gap-2 w-full md:w-auto'>
               <SimpleDialog 
                 triggerText="1. Upload Files" 
                 title="Upload Files" 
-                className='bg-primary border border-white w-full md:w-auto text-sm md:text-base font-semibold py-2 px-4'
+                className='btn btn-outline'
               >
                 <div className='bg-gray-100 p-4 rounded-lg'>
                   {isFileLimitReached ? (
@@ -325,7 +328,7 @@ const FileExplorer: React.FC = () => {
                 </div>
               </SimpleDialog>
               <button 
-                className='btn btn-primary flex items-center justify-center gap-2 w-full md:w-auto border border-white text-sm md:text-base font-semibold py-2 px-4' 
+                className='btn btn-outline' 
                 onClick={handleProcessAll} 
                 disabled={!!processingTaskId}
               >
@@ -338,7 +341,7 @@ const FileExplorer: React.FC = () => {
               </button>
               <Link 
                 to={`/chat/${projectId}`} 
-                className='btn btn-primary flex items-center justify-center gap-2 w-full md:w-auto border border-white text-sm md:text-base font-semibold py-2 px-4'
+                className='btn btn-outline'
               >
                 <BotMessageSquare size={24} />
                 <span className="hidden md:inline">3. Chat with Documents</span>
@@ -347,7 +350,7 @@ const FileExplorer: React.FC = () => {
             </div>
           </div>
           <Collapsible.Root className="mt-4">
-            <Collapsible.Trigger className="flex items-center text-sm text-black border border-white rounded-md py-2 px-4 bg-white">
+            <Collapsible.Trigger className="flex items-center text-sm text-black border border-black rounded-[40px] py-2 px-4 bg-white">
               <ChevronDown size={16} />
               <span>Project Actions</span>
             </Collapsible.Trigger>
@@ -441,7 +444,7 @@ const FileExplorer: React.FC = () => {
                           </button>
                         )}
                         <h2 className="text-xl font-semibold mb-4 break-all">{selectedFile.name}</h2>
-                        <button onClick={handleDelete} className="btn btn-secondary text-white bg-red-500 rounded-md p-2 mb-4">Delete Document</button>
+                        <button onClick={handleDelete} className="btn btn-outline text-white bg-red-500">Delete Document</button>
                         <div className="bg-muted p-4 rounded">
                           <p className='text-lg font-semibold break-all'>Preview of {selectedFile.name.split('/').pop()}</p>
                           <div className="my-4 border-t border-accent"></div>

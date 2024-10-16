@@ -57,7 +57,7 @@ const Login: React.FC = () => {
               />
             </div>
             <div className="flex items-baseline justify-between">
-              <button className="btn btn-primary px-6 py-2 mt-4 text-white  rounded-lg ">Login</button>
+              <button className="btn btn-secondary px-6 py-2 mt-4 rounded-lg ">Login</button>
             </div>
           </div>
         </form>

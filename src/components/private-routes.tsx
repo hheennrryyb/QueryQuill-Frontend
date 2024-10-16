@@ -29,7 +29,7 @@ const PrivateRoute: React.FC = () => {
         <p className="text-md mb-6">This could be due to maintenance or high traffic. Please try again in a few moments.</p>
         <button 
           onClick={() => window.location.reload()} 
-          className="btn btn-primary flex items-center px-4 py-2  text-white transition-colors"
+          className="btn btn-outline flex items-center px-4 py-2 transition-colors"
         >
           <RefreshCw className="w-5 h-5 mr-2" />
           Refresh Page

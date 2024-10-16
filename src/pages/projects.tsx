@@ -18,22 +18,22 @@ interface Project {
 
 const ProjectComponent = ({ project }: { project: Project }) => {
     return (
-        <div className='p-4 rounded-lg shadow-md outline outline-2 outline-secondary flex flex-col h-full'>
-            <div className='flex flex-row gap-2 items-center mb-2'>
+        <div className='p-4 rounded-xl shadow-md bg-white flex flex-col h-full'>
+            <Link to={`/file-explorer/${project.id}`}  className='flex flex-row gap-2 items-center mb-2'>
                 <LibraryBig size={32}/>
                 <h1 className='text-2xl font-bold'>{project.name}</h1>
-            </div>
+            </Link>
             <p className='text-gray-700 flex-grow'>{project.description}</p>
-            <div className='mt-4'>
+            <div className='mt-2'>
                 <p className='text-sm'>Created: {new Date(project.created_at).toLocaleString()}</p>
                 <p className='text-sm'>Updated: {new Date(project.updated_at).toLocaleString()}</p>
             </div>
-            <div className='flex gap-2 mt-4 justify-start'>
-                <Link to={`/chat/${project.id}`} className='btn btn-primary flex items-center'>
+            <div className='flex gap-2 mt-4 justify-start w-full flex-wrap'>
+                <Link to={`/chat/${project.id}`} className='btn btn-outline flex items-center w-full'>
                     <MessageSquare size={16} className="mr-2" />
                     Chat
                 </Link>
-                <Link to={`/file-explorer/${project.id}`} className='btn btn-secondary flex items-center'>
+                <Link to={`/file-explorer/${project.id}`} className='btn btn-secondary flex items-center w-full'>
                     <FolderOpen size={16} className="mr-2" />
                     File Explorer
                 </Link>
@@ -85,7 +85,7 @@ const Projects: React.FC = () => {
                 <div className="">
                     <h1 className="text-2xl font-bold">Projects</h1>
                 </div>
-                <SimpleDialog triggerText="Create New Project" title="Create New Project">
+                <SimpleDialog triggerText="Create New Project" title="Create New Project" className='btn btn-outline'>
                     <form onSubmit={handleCreateNewProjectSubmit} ref={formRef} className='flex flex-col gap-2'>
                         <input
                             type="text"
@@ -95,13 +95,13 @@ const Projects: React.FC = () => {
                             className='border border-gray-300 rounded-md p-2 text-black bg-white'
                             maxLength={30}
                         />
-                        <button type="submit" className='btn btn-primary text-white rounded-md p-2'>Create</button>
+                        <button type="submit" className='btn btn-secondary rounded-md p-2'>Create</button>
                     </form>
                 </SimpleDialog>
             </header>
             {projects.length > 0 ? (
                 <div className='flex-1 overflow-auto'>
-                    <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr pb-[220px] md:pb-[100px]'>
+                    <div className='p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr pb-[260px] md:pb-[100px]'>
                         {projects.map((project) => (
                             <ProjectComponent key={project.id} project={project} />
                         ))}
