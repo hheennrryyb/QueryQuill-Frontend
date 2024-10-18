@@ -25,7 +25,7 @@ function App() {
           <Nav />
           <div id="window" className="transition-all duration-300">
           <Routes>
-            <Route path="/" element={<Home />} /> {/* Add the Home route */}
+            <Route path="/" element={<Home />} /> 
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/logout" element={<Logout />} />
@@ -40,7 +40,7 @@ function App() {
             </Routes>
             <Toaster />
           </div>
-          <GoogleAnalytics /> {/* Add this line */}
+          <GoogleAnalytics />
         </Router>
       </AuthProvider>
     </ProfileProvider>

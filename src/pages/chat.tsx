@@ -119,18 +119,18 @@ With access to all the documents in your project, I'm here to help you find the 
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-100">
+    <div className="flex flex-col h-full min-h-[calc(100vh-64px)] bg-gray-100">
       <header className="bg-white shadow-sm p-4">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
+        <div className="max-w-4xl mx-auto flex flex-row justify-between items-center">
           <button
             onClick={() => navigate(`/file-explorer/${projectId}`)}
             className="flex items-center border border-gray-300 rounded-md p-2 bg-white transition-colors text-sm"
           >
-            <ArrowLeft size={16} className="mr-2" /> File Explorer
+            <ArrowLeft size={16} className="" /> <span className="ml-2 hidden sm:inline">File Explorer</span>
           </button>
-          <div className="pl-4 text-right mr-1">
-            <h2 className="text-xl font-bold text-gray-900 h-8">{projectDetails?.name}</h2>
-            <p className="text-sm text-gray-500 h-5">Last Updated: {new Date(projectDetails?.updated_at).toLocaleString()}</p>
+          <div className="pl-4 text-right mr-1 flex flex-col items-end self-end">
+            <h2 className="text-xl font-bold text-gray-900">{projectDetails?.name}</h2>
+            <p className="text-sm text-gray-500">Last Updated: {new Date(projectDetails?.updated_at).toLocaleString()}</p>
           </div>
         </div>
       </header>

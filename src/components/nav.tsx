@@ -14,7 +14,14 @@ const Nav: React.FC = () => {
 
   return (
     <>
-     <nav className="sm:hidden bg-secondary text-white p-3">
+    {/* Mobile Nav */}
+     <div
+       className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
+         isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+       }`}
+       onClick={() => setIsExpanded(false)}
+     ></div>
+     <nav className="sm:hidden bg-secondary text-white p-3 fixed top-0 left-0 w-full z-50">
       <div className="flex items-center justify-between">
         <Link to="/" className="flex items-center text-white">
           <img src="/QueryQuillLogoHorizontal.png" alt="Logo" className="h-10 mr-2" />
@@ -69,7 +76,7 @@ const Nav: React.FC = () => {
         </ul>
       </div>
     </nav>
-    
+    {/* Desktop Nav */}
     <nav 
       className="hidden sm:block min-h-[400px] max-h-[50vh] bg-secondary text-white transition-all duration-300 ease-in-out overflow-hidden rounded-[28px] backdrop-filter backdrop-blur-md shadow-md "
       style={{ width: isExpanded ? '160px' : '60px' }}
