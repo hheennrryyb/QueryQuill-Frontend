@@ -350,11 +350,13 @@ const FileExplorer: React.FC = () => {
             </div>
           </div>
           <Collapsible.Root className="mt-4">
-            <Collapsible.Trigger className="flex items-center text-sm text-black border border-black rounded-[40px] py-2 px-4 bg-white">
+            <Collapsible.Trigger className="flex flex-row items-center text-sm text-black border border-black rounded-[40px] py-2 px-4 bg-white">
               <ChevronDown size={16} />
               <span>Project Actions</span>
             </Collapsible.Trigger>
-            <Collapsible.Content>
+            <Collapsible.Content
+              className='flex flex-row gap-2'
+            >
               <SimpleDialog 
                 triggerText="Delete Project" 
                 title="Delete Project" 
@@ -368,6 +370,20 @@ const FileExplorer: React.FC = () => {
                   >
                     <Trash size={16} className='text-white' />
                   </button>
+                </div>
+              </SimpleDialog>
+              <SimpleDialog
+                triggerText="Help Me" 
+                title="How to use QueryQuill" 
+                className='bg-white border text-sm border-black text-center w-full md:w-fit mt-2 py-2 px-4'
+              >
+                <div className=''>
+                  <p className="mt-2">📤 1. Upload your documents or web pages to begin.</p>
+                  <p className="mt-2">⚙️ 2. Click "Process All" to prepare your content for intelligent chat. You must process all documents before you can chat with them. Any new files uploaded after processing has started will not be included in the chat-ready version.</p>
+                  <p className="mt-2">💬 3. Head to the Chat section to start asking questions about your documents!</p>
+                  <p className="mt-2">👀 4. Click on a document to preview and delete it.</p>
+
+                  <p className="mt-2">⏳ Note: Processing can take a while for large documents or web pages. Please be patient.</p>
                 </div>
               </SimpleDialog>
             </Collapsible.Content>
