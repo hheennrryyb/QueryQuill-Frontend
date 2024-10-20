@@ -119,7 +119,7 @@ With access to all the documents in your project, I'm here to help you find the 
   }
 
   return (
-    <div className="flex flex-col h-full min-h-[calc(100vh-64px)] bg-gray-100">
+    <div className="flex flex-col h-full max-h-[calc(100vh-64px)] sm:max-h-[100vh] bg-gray-100">
       <header className="bg-white shadow-sm p-4">
         <div className="max-w-4xl mx-auto flex flex-row justify-between items-center">
           <button
@@ -137,7 +137,7 @@ With access to all the documents in your project, I'm here to help you find the 
 
       <main className="flex-grow overflow-hidden">
         <div className="max-w-4xl mx-auto h-full flex flex-col">
-          <div className="flex-grow overflow-hidden p-2 sm:p-4">
+          <div className="flex-grow overflow-hidden px-2 sm:px-4">
             <ScrollArea>
               {messages.map((message) => (
                 <div key={message.id} className={`flex mt-6 items-start mb-6 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>

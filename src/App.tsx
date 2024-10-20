@@ -8,13 +8,13 @@ import Signup from './pages/signup';
 import Logout from './pages/logout';
 import Disclosure from './pages/disclosure';
 import Demo from './pages/demo';
-import Home from './pages/home'; // Import the new Home component
+import Home from './pages/home'; 
 import PrivateRoute from './components/private-routes';
 import { AuthProvider } from './contexts/auth-context';
 import { ProfileProvider } from './contexts/profile-context';
-import Nav from './components/nav'; // Assuming you have a separate Nav component
+import Nav from './components/nav'; 
 import { Toaster } from 'react-hot-toast';
-import GoogleAnalytics from './components/GoogleAnalytics'; // Add this import
+import GoogleAnalytics from './components/GoogleAnalytics'; 
 import './App.css';
 
 function App() {
